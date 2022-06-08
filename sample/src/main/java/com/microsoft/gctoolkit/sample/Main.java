@@ -82,8 +82,8 @@ public class Main {
         machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
             System.out.printf("Total pause time  : %.4f\n", pauseTimeSummary.getTotalPauseTime());
             System.out.printf("Total run time    : %.4f\n", pauseTimeSummary.getRuntimeDuration());
-            System.out.printf("Percent pause time: %.2f\n", pauseTimeSummary.getPercentPaused());
-            System.out.printf("Throughput       : %.2f\n", pauseTimeSummary.getThroughput());
+            System.out.printf("Percent pause time: %.4f\n", pauseTimeSummary.getPercentPaused());
+            System.out.printf("Percent Throughput: %.4f %%\n", pauseTimeSummary.getThroughput());
         });
 
     }

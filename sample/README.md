@@ -11,8 +11,8 @@ We use the Maven wrapper (`mvnw`) so you don't have to change your system wide M
 Install the sample to your local maven repository with `mvnw install`, then use `mvnw exec:exec` to run the sample.
 
 ```shell
-mvnw clean install
-mvnw exec:exec
+mvn clean install -DskipTests
+mvn exec:exec -DgcLogFile=/home/hritwik/temp/gctoolkit/gclogs/hbase.gc.0.log
 ```
 
 By default, the sample analyzes `../gclogs/preunified/cms/defnew/details/defnew.log`. Set the parameter `gcLogPath` to analyze a different GC log file.
