@@ -82,10 +82,10 @@ public class Main {
         // Retrieves the Aggregation for PauseTimeSummary. This is a com.microsoft.gctoolkit.sample.aggregation.RuntimeAggregation.
         machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
             System.out.println();
-            System.out.printf("Total pause time  : %.4f ms\n", pauseTimeSummary.getTotalPauseTime());
-            System.out.printf("Total run time    : %.4f ms\n", pauseTimeSummary.getRuntimeDuration());
-            System.out.printf("Percent pause time: %.4f %%\n", pauseTimeSummary.getPercentPaused());
-            System.out.printf("Percent Throughput: %.4f %%\n", pauseTimeSummary.getThroughput());
+            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
+            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
+            System.out.printf("Percent pause time                : %.2f %%\n", pauseTimeSummary.getPercentPaused());
+            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
         });
 
     }
