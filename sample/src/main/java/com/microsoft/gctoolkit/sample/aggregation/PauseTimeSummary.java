@@ -27,6 +27,7 @@ public class PauseTimeSummary extends PauseTimeAggregation {
 
     /**
      * Get the total amount of time the application was paused for garbage collection.
+     *
      * @return The total pause time.
      */
     public double getTotalPauseTime() {
@@ -35,9 +36,14 @@ public class PauseTimeSummary extends PauseTimeAggregation {
 
     /**
      * Get the amount of time the application was paused as a percentage of total runtime.
+     *
      * @return The percentage of time the application was paused.
      */
     public double getPercentPaused() {
         return (totalPauseTime / getRuntimeDuration()) * 100.0D;
+    }
+
+    public double getThroughput() {
+        return 100 - getPercentPaused();
     }
 }
