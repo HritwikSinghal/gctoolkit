@@ -14,6 +14,11 @@ Install the sample to your local maven repository with `mvnw install`, then use 
 mvn clean install -DskipTests
 mvn exec:exec -DgcLogFile=/home/hritwik/temp/gctoolkit/gclogs/hbase.gc.0.log
 ```
+Or in a single line
+
+```shell
+mvn exec:exec -DgcLogFile=/home/hritwik/temp/gctoolkit/gclogs/hbase.gc.0.log
+```
 
 By default, the sample analyzes `../gclogs/preunified/cms/defnew/details/defnew.log`. Set the parameter `gcLogPath` to analyze a different GC log file.
 
