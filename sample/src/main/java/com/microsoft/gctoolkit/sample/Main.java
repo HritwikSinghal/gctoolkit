@@ -13,6 +13,7 @@ import com.microsoft.gctoolkit.sample.collections.XYDataSet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,11 +58,40 @@ public class Main {
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
-        Optional<HeapOccupancyAfterCollectionSummary> temp = machine.getAggregation(HeapOccupancyAfterCollectionSummary.class);
-        temp.map(HeapOccupancyAfterCollectionSummary::get).ifPresent(summary -> {
-            for (Map.Entry<GarbageCollectionTypes, XYDataSet> entry : summary.entrySet()) {
-                GarbageCollectionTypes gcType = entry.getKey();
-                XYDataSet dataSet = entry.getValue();
+//        machine.getAggregation(HeapOccupancyAfterCollectionSummary.class)
+//                .map(HeapOccupancyAfterCollectionSummary::get).ifPresent(summary -> {
+//                    summary.forEach((gcType, dataSet) -> {
+//                        System.out.printf(message, gcType, dataSet.size());
+//                        switch (gcType) {
+//                            case DefNew:
+//                                defNewCount = dataSet.size();
+//                                break;
+//                            case InitialMark:
+//                                initialMarkCount = dataSet.size();
+//                                break;
+//                            case Remark:
+//                                remarkCount = dataSet.size();
+//                                break;
+//                            default:
+//                                System.out.println(gcType + " not managed");
+//                                break;
+//                        }
+//                    });
+//                });
+
+        // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
+        // default functions like 'map'.
+        Optional<HeapOccupancyAfterCollectionSummary> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummary.class);
+
+        // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
+        // and we are using "map" function of "Optional" to map it.
+
+        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummary::get);
+
+        if (data_from_aggregation.isPresent()) {
+            Map<GarbageCollectionTypes, XYDataSet> summary = data_from_aggregation.get();
+
+            summary.forEach((gcType, dataSet) -> {
                 System.out.printf(message, gcType, dataSet.size());
                 switch (gcType) {
                     case DefNew:
@@ -77,8 +107,20 @@ public class Main {
                         System.out.println(gcType + " not managed");
                         break;
                 }
-            }
-        });
+            });
+        }
+
+        // Example of lambda function in Java with arraylist.
+//        ArrayList<Integer> my_new_arr = new ArrayList<>();
+//        my_new_arr.add(1);
+//        my_new_arr.add(10);
+//        my_new_arr.add(100);
+//        my_new_arr.add(122);
+//        my_new_arr.add(134);
+//
+//        my_new_arr.forEach(integer -> {
+//            System.out.printf("Hello there, the current element is %d\n", integer);
+//        });
 
         Optional<CollectionCycleCountsSummary> summary = machine.getAggregation(CollectionCycleCountsSummary.class);
         summary.ifPresent(s -> s.printOn(System.out));
