@@ -90,12 +90,10 @@ public class Main {
 
         // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
         // and we are using "map" function of "Optional" to convert one type to another.
-
         Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
 
-        if (data_from_aggregation.isPresent()) {
-            Map<GarbageCollectionTypes, XYDataSet> summary = data_from_aggregation.get();
-
+//      summary is of type "Map<GarbageCollectionTypes, XYDataSet>"
+        data_from_aggregation.ifPresent(summary -> {
             summary.forEach((gcType, dataSet) -> {
                 System.out.printf(message, gcType, dataSet.size());
                 switch (gcType) {
@@ -113,7 +111,8 @@ public class Main {
                         break;
                 }
             });
-        }
+        });
+
 
         // Example of lambda function in Java with arraylist.
 //        ArrayList<Integer> my_new_arr = new ArrayList<>();
@@ -147,13 +146,22 @@ public class Main {
 
         // machine.getAggregation(PauseTimeSummary.class) is of type PauseTimeSummary in Optional.
         // Retrieves the Aggregation for PauseTimeSummary. This is a RuntimeAggregation.
-        machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
-            System.out.println();
+
+//        machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
+//            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
+//            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
+//            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
+//            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
+//        });
+
+        Optional<PauseTimeSummary> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummary.class);
+        my_pause_time_aggregation.ifPresent(pauseTimeSummary -> {
             System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
             System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
         });
+
     }
 
     public static void main(String[] args) throws IOException {
