@@ -6,14 +6,13 @@ import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.SingleGCLogFile;
 import com.microsoft.gctoolkit.jvm.JavaVirtualMachine;
 import com.microsoft.gctoolkit.sample.aggregation.CollectionCycleCountsSummary;
-import com.microsoft.gctoolkit.sample.aggregation.HeapOccupancyAfterCollectionSummary;
+import com.microsoft.gctoolkit.sample.aggregation.HeapOccupancyAfterCollectionSummaryAggregation;
 import com.microsoft.gctoolkit.sample.aggregation.PauseTimeSummary;
 import com.microsoft.gctoolkit.sample.collections.XYDataSet;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,6 +57,9 @@ public class Main {
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
+        //----- Prints Heap Collection Summary using HeapCollection Classes -----//
+
+
 //        machine.getAggregation(HeapOccupancyAfterCollectionSummary.class)
 //                .map(HeapOccupancyAfterCollectionSummary::get).ifPresent(summary -> {
 //                    summary.forEach((gcType, dataSet) -> {
@@ -81,12 +83,12 @@ public class Main {
 
         // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
         // default functions like 'map'.
-        Optional<HeapOccupancyAfterCollectionSummary> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummary.class);
+        Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
 
         // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
         // and we are using "map" function of "Optional" to map it.
 
-        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummary::get);
+        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
 
         if (data_from_aggregation.isPresent()) {
             Map<GarbageCollectionTypes, XYDataSet> summary = data_from_aggregation.get();
@@ -122,9 +124,19 @@ public class Main {
 //            System.out.printf("Hello there, the current element is %d\n", integer);
 //        });
 
+
+        //----- Prints Collection Summary using CollectionSummary Classes    -----//
         Optional<CollectionCycleCountsSummary> summary = machine.getAggregation(CollectionCycleCountsSummary.class);
         summary.ifPresent(s -> s.printOn(System.out));
-        // Retrieves the Aggregation for PauseTimeSummary. This is a com.microsoft.gctoolkit.sample.aggregation.RuntimeAggregation.
+
+//        System.out.printf("getInitialMarkCount %d\n", getInitialMarkCount());
+//        System.out.printf("getRemarkCount %d\n", getRemarkCount());
+//        System.out.printf("getDefNewCount %d\n", getDefNewCount());
+
+
+        //----- Prints Pause Time Summary using PauseTime classes            -----//
+
+        // Retrieves the Aggregation for PauseTimeSummary. This is a RuntimeAggregation.
         machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
             System.out.println();
             System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
@@ -132,7 +144,6 @@ public class Main {
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
         });
-
     }
 
     public static void main(String[] args) throws IOException {
