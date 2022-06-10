@@ -57,8 +57,11 @@ public class Main {
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
-        //----- Prints Heap Collection Summary using HeapCollection Classes -----//
 
+        //--------------------------------------------------------------------------------//
+        //-----      Prints Heap Collection Summary using HeapCollection Classes     -----//
+        //--------------------------------------------------------------------------------//
+        System.out.println("-----         Prints Heap Collection Summary using HeapCollection Classes    -----");
 
 //        machine.getAggregation(HeapOccupancyAfterCollectionSummary.class)
 //                .map(HeapOccupancyAfterCollectionSummary::get).ifPresent(summary -> {
@@ -82,11 +85,11 @@ public class Main {
 //                });
 
         // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
-        // default functions like 'map'.
+        // default functions like 'map' (which is used to convert one type to another, similar to map in python).
         Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
 
         // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
-        // and we are using "map" function of "Optional" to map it.
+        // and we are using "map" function of "Optional" to convert one type to another.
 
         Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
 
@@ -124,8 +127,11 @@ public class Main {
 //            System.out.printf("Hello there, the current element is %d\n", integer);
 //        });
 
+        //--------------------------------------------------------------------------------//
+        //-----         Prints Collection Summary using CollectionCycleCounts Classes    -----//
+        //--------------------------------------------------------------------------------//
+        System.out.println("-----         Prints Collection Summary using CollectionCycleCounts Classes    -----");
 
-        //----- Prints Collection Summary using CollectionSummary Classes    -----//
         Optional<CollectionCycleCountsSummary> summary = machine.getAggregation(CollectionCycleCountsSummary.class);
         summary.ifPresent(s -> s.printOn(System.out));
 
@@ -134,8 +140,12 @@ public class Main {
 //        System.out.printf("getDefNewCount %d\n", getDefNewCount());
 
 
-        //----- Prints Pause Time Summary using PauseTime classes            -----//
+        //--------------------------------------------------------------------------------//
+        //-----         Prints Pause Time Summary using PauseTime classes            -----//
+        //--------------------------------------------------------------------------------//
+        System.out.println("-----         Prints Pause Time Summary using PauseTime classes    -----");
 
+        // machine.getAggregation(PauseTimeSummary.class) is of type PauseTimeSummary in Optional.
         // Retrieves the Aggregation for PauseTimeSummary. This is a RuntimeAggregation.
         machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
             System.out.println();
