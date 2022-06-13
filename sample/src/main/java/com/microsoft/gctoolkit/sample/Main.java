@@ -84,10 +84,12 @@ public class Main {
 //                });
 
         // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
-        // default functions like 'map' (which is used to convert one type to another, similar to map in python).
+        // default functions like 'map' (map() applies the Function argument to the value, then returns the result wrapped in an Optional).
         Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
 
-        // Some Testing, Pls ignore. Thank you! //
+
+        //----------------------------------------//
+        //  Some Testing, Pls ignore. Thank you!  //
 //        aggregation.ifPresent(x -> {
 //            System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOO");
 //            Map<GarbageCollectionTypes, XYDataSet> aggregations = x.get();
@@ -97,6 +99,9 @@ public class Main {
 //                my_list.forEach(System.out::println);
 //            });
 //        });
+
+        //----------------------------------------//
+
 
         // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
         // and we are using "map" function of "Optional" to convert one type to another.

@@ -1,10 +1,12 @@
 package com.microsoft.gctoolkit.sample.aggregation;
 
+import com.microsoft.gctoolkit.aggregator.Collates;
 import com.microsoft.gctoolkit.event.GarbageCollectionTypes;
 
 import java.io.PrintStream;
 import java.util.HashMap;
 
+@Collates(CollectionCycleCountsAggregator.class)
 public class CollectionCycleCountsSummaryAggregation implements CollectionCycleCountsAggregation {
 
     private HashMap<GarbageCollectionTypes,Integer> collectionCycleCounts = new HashMap<>();
