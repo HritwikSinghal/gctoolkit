@@ -5,14 +5,13 @@ import com.microsoft.gctoolkit.event.GarbageCollectionTypes;
 import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.SingleGCLogFile;
 import com.microsoft.gctoolkit.jvm.JavaVirtualMachine;
-import com.microsoft.gctoolkit.sample.aggregation.CollectionCycleCountsSummary;
-import com.microsoft.gctoolkit.sample.aggregation.HeapOccupancyAfterCollectionSummaryAggregation;
-import com.microsoft.gctoolkit.sample.aggregation.PauseTimeSummary;
+import com.microsoft.gctoolkit.sample.aggregation.*;
 import com.microsoft.gctoolkit.sample.collections.XYDataSet;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -88,6 +87,17 @@ public class Main {
         // default functions like 'map' (which is used to convert one type to another, similar to map in python).
         Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
 
+        // Some Testing, Pls ignore. Thank you! //
+//        aggregation.ifPresent(x -> {
+//            System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOO");
+//            Map<GarbageCollectionTypes, XYDataSet> aggregations = x.get();
+//            aggregations.forEach((aaa, bbb) -> {
+//                System.out.printf("%s ||||\n--\n", aaa);
+//                List<XYDataSet.Point> my_list = bbb.getItems();
+//                my_list.forEach(System.out::println);
+//            });
+//        });
+
         // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
         // and we are using "map" function of "Optional" to convert one type to another.
         Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
@@ -114,24 +124,13 @@ public class Main {
         });
 
 
-        // Example of lambda function in Java with arraylist.
-//        ArrayList<Integer> my_new_arr = new ArrayList<>();
-//        my_new_arr.add(1);
-//        my_new_arr.add(10);
-//        my_new_arr.add(100);
-//        my_new_arr.add(122);
-//        my_new_arr.add(134);
-//
-//        my_new_arr.forEach(integer -> {
-//            System.out.printf("Hello there, the current element is %d\n", integer);
-//        });
-
         //--------------------------------------------------------------------------------//
         //-----         Prints Collection Summary using CollectionCycleCounts Classes    -----//
         //--------------------------------------------------------------------------------//
         System.out.println("-----         Prints Collection Summary using CollectionCycleCounts Classes    -----");
 
-        Optional<CollectionCycleCountsSummary> summary = machine.getAggregation(CollectionCycleCountsSummary.class);
+        Optional<CollectionCycleCountsSummaryAggregation> summary = machine.getAggregation(CollectionCycleCountsSummaryAggregation.class);
+        // summary is of type CollectionCycleCountsSummary bcoz it's from that aggregation --^^^^
         summary.ifPresent(s -> s.printOn(System.out));
 
 //        System.out.printf("getInitialMarkCount %d\n", getInitialMarkCount());
@@ -155,6 +154,7 @@ public class Main {
 //        });
 
         Optional<PauseTimeSummary> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummary.class);
+        // pauseTimeSummary is of type PauseTimeSummary.
         my_pause_time_aggregation.ifPresent(pauseTimeSummary -> {
             System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
             System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
