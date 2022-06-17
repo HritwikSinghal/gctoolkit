@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import com.microsoft.gctoolkit.sample.aggregation.CMSTimeSummaryAggregation;
 import com.microsoft.gctoolkit.sample.aggregation.CollectionCycleCountsSummaryAggregation;
 import com.microsoft.gctoolkit.sample.aggregation.HeapOccupancyAfterCollectionSummaryAggregation;
 import com.microsoft.gctoolkit.sample.aggregation.PauseTimeSummaryAggregation;
@@ -24,5 +25,6 @@ module com.microsoft.gctoolkit.sample {
     provides com.microsoft.gctoolkit.aggregator.Aggregation with
             HeapOccupancyAfterCollectionSummaryAggregation,
             PauseTimeSummaryAggregation,
-            CollectionCycleCountsSummaryAggregation;
+            CollectionCycleCountsSummaryAggregation,
+            CMSTimeSummaryAggregation;
 }

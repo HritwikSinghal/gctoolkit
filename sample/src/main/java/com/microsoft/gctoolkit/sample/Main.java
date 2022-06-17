@@ -52,6 +52,7 @@ public class Main {
          */
         JavaVirtualMachine machine = gcToolKit.analyze(logFile);
 
+
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
@@ -165,6 +166,19 @@ public class Main {
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummaryAggregation.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
         });
+
+
+        //--------------------------------------------------------------------------------//
+        //-----         Prints CMS Time Summary using CMSTime classes            -----//
+        //--------------------------------------------------------------------------------//
+        System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
+
+        Optional<CMSTimeSummaryAggregation> my_cms_time_aggregation = machine.getAggregation(CMSTimeSummaryAggregation.class);
+        my_cms_time_aggregation.ifPresent(cmsTimeSummaryAggregation -> {
+            System.out.printf("Total CMS pause time                  : %.2f sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
+            System.out.println((cmsTimeSummaryAggregation.getMemPoolList()));
+        });
+
 
     }
 

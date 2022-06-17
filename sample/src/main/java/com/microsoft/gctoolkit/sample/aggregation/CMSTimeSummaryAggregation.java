@@ -1,8 +1,13 @@
 package com.microsoft.gctoolkit.sample.aggregation;
 
-public class CMSTimeSummaryAggregation extends CMSTimeAggregation {
+import com.microsoft.gctoolkit.event.MemoryPoolSummary;
 
-    private double totalPauseTime;
+import java.util.ArrayList;
+
+public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
+
+    private double totalInitialMarkTime;
+    private ArrayList<String> mem_pool_list = new ArrayList<>();
 
     @Override
     public boolean hasWarning() {
@@ -15,19 +20,20 @@ public class CMSTimeSummaryAggregation extends CMSTimeAggregation {
     }
 
     @Override
-    public void recordCMSTimeDuration(double duration) {
-        totalPauseTime += duration;
+    public void recordInitialMarkDuration(double duration) {
+        totalInitialMarkTime += duration;
     }
 
-    public double getTotalPauseTime() {
-        return totalPauseTime;
+    @Override
+    public void recordMemPool(MemoryPoolSummary memoryPoolSummary) {
+        mem_pool_list.add(memoryPoolSummary.toString());
     }
 
-    public double getPercentPaused() {
-        return (totalPauseTime / getRuntimeDuration()) * 100.0D;
+    public double getTotalInitialMarkTime() {
+        return totalInitialMarkTime;
     }
 
-    public double getThroughput() {
-        return 100 - getPercentPaused();
+    public ArrayList<String> getMemPoolList() {
+        return mem_pool_list;
     }
 }
