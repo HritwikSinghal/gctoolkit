@@ -175,8 +175,9 @@ public class Main {
 
         Optional<CMSTimeSummaryAggregation> my_cms_time_aggregation = machine.getAggregation(CMSTimeSummaryAggregation.class);
         my_cms_time_aggregation.ifPresent(cmsTimeSummaryAggregation -> {
-            System.out.printf("Total CMS pause time                  : %.2f sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
-            System.out.println((cmsTimeSummaryAggregation.getMemPoolList()));
+            System.out.printf("Total Initial Mark Time                  : %f sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
+            System.out.printf("Minimum initial mark duration:           : %f sec\n", cmsTimeSummaryAggregation.getMinInitialMarkTime());
+            System.out.printf("Maximum initial mark duration:           : %f sec\n", cmsTimeSummaryAggregation.getMaxInitialMarkTime());
         });
 
 
