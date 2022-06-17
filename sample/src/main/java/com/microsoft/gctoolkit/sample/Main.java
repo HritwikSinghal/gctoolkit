@@ -157,13 +157,13 @@ public class Main {
 //            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
 //        });
 
-        Optional<PauseTimeSummary> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummary.class);
+        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
         // pauseTimeSummary is of type PauseTimeSummary.
-        my_pause_time_aggregation.ifPresent(pauseTimeSummary -> {
-            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
-            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
-            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
-            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
+        my_pause_time_aggregation.ifPresent(pauseTimeSummaryAggregation -> {
+            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummaryAggregation.getTotalPauseTime());
+            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummaryAggregation.getRuntimeDuration());
+            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummaryAggregation.getPercentPaused());
+            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
         });
 
     }

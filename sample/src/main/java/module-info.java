@@ -3,6 +3,7 @@
 
 import com.microsoft.gctoolkit.sample.aggregation.CollectionCycleCountsSummaryAggregation;
 import com.microsoft.gctoolkit.sample.aggregation.HeapOccupancyAfterCollectionSummaryAggregation;
+import com.microsoft.gctoolkit.sample.aggregation.PauseTimeSummaryAggregation;
 
 /**
  * Contains an Aggregator and an Aggregation
@@ -22,6 +23,6 @@ module com.microsoft.gctoolkit.sample {
 
     provides com.microsoft.gctoolkit.aggregator.Aggregation with
             HeapOccupancyAfterCollectionSummaryAggregation,
-             com.microsoft.gctoolkit.sample.aggregation.PauseTimeSummary,
+            PauseTimeSummaryAggregation,
             CollectionCycleCountsSummaryAggregation;
 }

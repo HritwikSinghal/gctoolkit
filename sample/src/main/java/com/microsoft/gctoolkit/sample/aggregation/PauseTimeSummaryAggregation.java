@@ -6,7 +6,7 @@ package com.microsoft.gctoolkit.sample.aggregation;
  * application was paused. This is an instance of RuntimeAggregation, which gives us
  * the run time represented by the GC log.
  */
-public class PauseTimeSummary extends PauseTimeAggregation {
+public class PauseTimeSummaryAggregation extends PauseTimeAggregation {
 
     private double totalPauseTime;
 
