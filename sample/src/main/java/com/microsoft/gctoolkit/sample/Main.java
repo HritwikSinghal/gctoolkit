@@ -11,7 +11,6 @@ import com.microsoft.gctoolkit.sample.collections.XYDataSet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,21 +32,21 @@ public class Main {
     }
 
     public void analyze(String gcLogFile) throws IOException {
-        /**
-         * GC log files can come in  one of two types: single or series of rolling logs.
-         * In this sample, we load a single log file.
-         * The log files can be either in text, zip, or gzip format.
+        /*
+          GC log files can come in  one of two types: single or series of rolling logs.
+          In this sample, we load a single log file.
+          The log files can be either in text, zip, or gzip format.
          */
         GCLogFile logFile = new SingleGCLogFile(Path.of(gcLogFile));
         GCToolKit gcToolKit = new GCToolKit();
 
-        /**
+        /*
          * This call will load all implementations of Aggregator that have been declared in module-info.java.
          * This mechanism makes use of Module SPI.
          */
         gcToolKit.loadAggregationsFromServiceLoader();
 
-        /**
+        /*
          * The JavaVirtualMachine contains the aggregations as filled out by the Aggregators.
          * It also contains configuration information about how the JVM was configured for the runtime.
          */
