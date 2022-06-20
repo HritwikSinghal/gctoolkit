@@ -1,17 +1,15 @@
 package com.microsoft.gctoolkit.sample;
 
 import com.microsoft.gctoolkit.GCToolKit;
-import com.microsoft.gctoolkit.event.GarbageCollectionTypes;
 import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.SingleGCLogFile;
 import com.microsoft.gctoolkit.jvm.JavaVirtualMachine;
 import com.microsoft.gctoolkit.sample.aggregation.*;
-import com.microsoft.gctoolkit.sample.collections.XYDataSet;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class Main {
@@ -29,6 +27,20 @@ public class Main {
 
     public int getDefNewCount() {
         return defNewCount;
+    }
+
+    public ArrayList<Integer> convert_to_time(double duration) {
+        int hours = (int) duration;
+        int minutes = (int) (duration * 60) % 60;
+        int seconds = (int) (duration * (60 * 60)) % 60;
+
+        ArrayList<Integer> time_ = new ArrayList<>();
+        time_.add(hours);
+        time_.add(minutes);
+        time_.add(seconds);
+//        System.out.printf("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
+
+        return time_;
     }
 
     public void analyze(String gcLogFile) throws IOException {
@@ -52,7 +64,7 @@ public class Main {
          */
         JavaVirtualMachine machine = gcToolKit.analyze(logFile);
 
-
+        /*
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
@@ -167,6 +179,7 @@ public class Main {
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
         });
 
+        */
 
         //--------------------------------------------------------------------------------//
         //-----         Prints CMS Time Summary using CMSTime classes            -----//
@@ -175,11 +188,30 @@ public class Main {
 
         Optional<CMSTimeSummaryAggregation> my_cms_time_aggregation = machine.getAggregation(CMSTimeSummaryAggregation.class);
         my_cms_time_aggregation.ifPresent(cmsTimeSummaryAggregation -> {
-            System.out.printf("Total Initial Mark Time                  : %f sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
-            System.out.printf("Minimum initial mark duration:           : %f sec\n", cmsTimeSummaryAggregation.getMinInitialMarkTime());
-            System.out.printf("Maximum initial mark duration:           : %f sec\n", cmsTimeSummaryAggregation.getMaxInitialMarkTime());
+
+            ArrayList<Integer> total_time = convert_to_time(cmsTimeSummaryAggregation.getTotalInitialMarkTime());
+            ArrayList<Integer> min_time = convert_to_time(cmsTimeSummaryAggregation.getMinInitialMarkTime());
+            ArrayList<Integer> max_time = convert_to_time(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
+
+            System.out.println(cmsTimeSummaryAggregation.getTotalInitialMarkTime());
+            System.out.println(cmsTimeSummaryAggregation.getMinInitialMarkTime());
+            System.out.println(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
+
+            System.out.printf("Total Initial Mark Time                  : %s h %s m %s s\n", total_time.get(0), total_time.get(1), total_time.get(2));
+            System.out.printf("Minimum initial mark duration:           :%s h %s m %s s\n", min_time.get(0), min_time.get(1), min_time.get(2));
+            System.out.printf("Maximum initial mark duration:           :%s h %s m %s s \n", max_time.get(0), max_time.get(1), max_time.get(2));
         });
 
+        //--------------------------------------------------------------------------------//
+        //-----         Prints Full GC Time Summary             -----//
+        //--------------------------------------------------------------------------------//
+        System.out.println("-----         Prints Full GC Summary    -----");
+
+        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
+            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((k, v) -> {
+                System.out.printf("%s: %f\n", k, v);
+            });
+        });
 
     }
 

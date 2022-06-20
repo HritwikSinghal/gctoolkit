@@ -8,15 +8,18 @@ import java.util.HashMap;
 
 public class CollectionCycleCountsSummaryAggregation implements CollectionCycleCountsAggregation {
 
-    private HashMap<GarbageCollectionTypes,Integer> collectionCycleCounts = new HashMap<>();
+    private HashMap<GarbageCollectionTypes, Integer> collectionCycleCounts = new HashMap<>();
+
     @Override
     public void count(GarbageCollectionTypes gcType) {
+        // increments the values in map by 1 if not null else sets it to 1
         collectionCycleCounts.compute(gcType, (key, value) -> value == null ? 1 : ++value);
     }
 
     private String format = "%s : %s\n";
+
     public void printOn(PrintStream printStream) {
-        collectionCycleCounts.keySet().forEach(k -> printStream.printf(format,k, collectionCycleCounts.get(k)));
+        collectionCycleCounts.keySet().forEach(k -> printStream.printf(format, k, collectionCycleCounts.get(k)));
     }
 
     @Override
