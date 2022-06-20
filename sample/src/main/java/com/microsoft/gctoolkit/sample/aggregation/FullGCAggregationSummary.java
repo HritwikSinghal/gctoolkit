@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class FullGCAggregationSummary implements FullGCAggregation {
 
+    private Map<GCCause, Double> maxPauseTime = new HashMap<>();
+    private Map<GarbageCollectionTypes, Integer> summary_gctype = new HashMap<>();
     @Override
     public boolean hasWarning() {
         return false;
@@ -18,9 +20,6 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     public boolean isEmpty() {
         return false;
     }
-
-    private Map<GCCause, Double> maxPauseTime = new HashMap<>();
-    private Map<GarbageCollectionTypes, Integer> summary_gctype = new HashMap<>();
 
     @Override
     public void recordFullGC(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
