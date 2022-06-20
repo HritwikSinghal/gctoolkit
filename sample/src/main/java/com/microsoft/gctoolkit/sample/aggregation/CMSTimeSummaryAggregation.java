@@ -1,20 +1,11 @@
 package com.microsoft.gctoolkit.sample.aggregation;
 
-import com.microsoft.gctoolkit.event.GCCause;
-import com.microsoft.gctoolkit.event.GarbageCollectionTypes;
-import com.microsoft.gctoolkit.time.DateTimeStamp;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
 
     private double totalInitialMarkTime;
     private double maxInitialMarkTime;
     private double minInitialMarkTime;
-
-    private Map<GarbageCollectionTypes, Integer> summary_gctype = new HashMap<>();
 
     @Override
     public boolean hasWarning() {
@@ -50,11 +41,4 @@ public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
         return maxInitialMarkTime;
     }
 
-    public void record_gc_summary(GarbageCollectionTypes gctype) {
-        summary_gctype.compute(gctype, (key, value) -> value == null ? 1 : ++value);
-    }
-
-    public Map<GarbageCollectionTypes, Integer> get_gc_summary() {
-        return summary_gctype;
-    }
 }

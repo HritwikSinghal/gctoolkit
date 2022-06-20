@@ -9,10 +9,24 @@ import com.microsoft.gctoolkit.sample.aggregation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class Main {
+
+    private int hours;
+    private int minutes;
+    private int seconds;
+
+    private void convert_to_time(double duration) {
+        hours = (int) duration;
+        minutes = (int) (duration * 60) % 60;
+        seconds = (int) (duration * (60 * 60)) % 60;
+    }
+
+    public String to_string(double duration) {
+        convert_to_time(duration);
+        return String.format("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
+    }
+
     private int initialMarkCount = 0;
     private int remarkCount = 0;
     private int defNewCount = 0;
@@ -27,20 +41,6 @@ public class Main {
 
     public int getDefNewCount() {
         return defNewCount;
-    }
-
-    public ArrayList<Integer> convert_to_time(double duration) {
-        int hours = (int) duration;
-        int minutes = (int) (duration * 60) % 60;
-        int seconds = (int) (duration * (60 * 60)) % 60;
-
-        ArrayList<Integer> time_ = new ArrayList<>();
-        time_.add(hours);
-        time_.add(minutes);
-        time_.add(seconds);
-//        System.out.printf("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
-
-        return time_;
     }
 
     public void analyze(String gcLogFile) throws IOException {
@@ -64,7 +64,7 @@ public class Main {
          */
         JavaVirtualMachine machine = gcToolKit.analyze(logFile);
 
-        /*
+
         // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
         String message = "The XYDataSet for %s contains %s items.\n";
 
@@ -74,71 +74,53 @@ public class Main {
         //--------------------------------------------------------------------------------//
         System.out.println("-----         Prints Heap Collection Summary using HeapCollection Classes    -----");
 
-//        machine.getAggregation(HeapOccupancyAfterCollectionSummary.class)
-//                .map(HeapOccupancyAfterCollectionSummary::get).ifPresent(summary -> {
-//                    summary.forEach((gcType, dataSet) -> {
-//                        System.out.printf(message, gcType, dataSet.size());
-//                        switch (gcType) {
-//                            case DefNew:
-//                                defNewCount = dataSet.size();
-//                                break;
-//                            case InitialMark:
-//                                initialMarkCount = dataSet.size();
-//                                break;
-//                            case Remark:
-//                                remarkCount = dataSet.size();
-//                                break;
-//                            default:
-//                                System.out.println(gcType + " not managed");
-//                                break;
-//                        }
-//                    });
-//                });
+        machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class)
+                .map(HeapOccupancyAfterCollectionSummaryAggregation::get).ifPresent(summary -> {
+                    summary.forEach((gcType, dataSet) -> {
+                        System.out.printf(message, gcType, dataSet.size());
+                        switch (gcType) {
+                            case DefNew:
+                                defNewCount = dataSet.size();
+                                break;
+                            case InitialMark:
+                                initialMarkCount = dataSet.size();
+                                break;
+                            case Remark:
+                                remarkCount = dataSet.size();
+                                break;
+                            default:
+                                System.out.println(gcType + " not managed");
+                                break;
+                        }
+                    });
+                });
 
-        // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
-        // default functions like 'map' (map() applies the Function argument to the value, then returns the result wrapped in an Optional).
-        Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
-
-
-        //----------------------------------------//
-        //  Some Testing, Pls ignore. Thank you!  //
-//        aggregation.ifPresent(x -> {
-//            System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOO");
-//            Map<GarbageCollectionTypes, XYDataSet> aggregations = x.get();
-//            aggregations.forEach((aaa, bbb) -> {
-//                System.out.printf("%s ||||\n--\n", aaa);
-//                List<XYDataSet.Point> my_list = bbb.getItems();
-//                my_list.forEach(System.out::println);
+//        // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
+//        // default functions like 'map' (map() applies the Function argument to the value, then returns the result wrapped in an Optional).
+//        Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
+//        // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
+//        // and we are using "map" function of "Optional" to convert one type to another.
+//        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
+//        // summary is of type "Map<GarbageCollectionTypes, XYDataSet>"
+//        data_from_aggregation.ifPresent(summary -> {
+//            summary.forEach((gcType, dataSet) -> {
+//                System.out.printf(message, gcType, dataSet.size());
+//                switch (gcType) {
+//                    case DefNew:
+//                        defNewCount = dataSet.size();
+//                        break;
+//                    case InitialMark:
+//                        initialMarkCount = dataSet.size();
+//                        break;
+//                    case Remark:
+//                        remarkCount = dataSet.size();
+//                        break;
+//                    default:
+//                        System.out.println(gcType + " not managed");
+//                        break;
+//                }
 //            });
 //        });
-
-        //----------------------------------------//
-
-
-        // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
-        // and we are using "map" function of "Optional" to convert one type to another.
-        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
-
-//      summary is of type "Map<GarbageCollectionTypes, XYDataSet>"
-        data_from_aggregation.ifPresent(summary -> {
-            summary.forEach((gcType, dataSet) -> {
-                System.out.printf(message, gcType, dataSet.size());
-                switch (gcType) {
-                    case DefNew:
-                        defNewCount = dataSet.size();
-                        break;
-                    case InitialMark:
-                        initialMarkCount = dataSet.size();
-                        break;
-                    case Remark:
-                        remarkCount = dataSet.size();
-                        break;
-                    default:
-                        System.out.println(gcType + " not managed");
-                        break;
-                }
-            });
-        });
 
 
         //--------------------------------------------------------------------------------//
@@ -146,14 +128,10 @@ public class Main {
         //--------------------------------------------------------------------------------//
         System.out.println("-----         Prints Collection Summary using CollectionCycleCounts Classes    -----");
 
-        Optional<CollectionCycleCountsSummaryAggregation> summary = machine.getAggregation(CollectionCycleCountsSummaryAggregation.class);
         // summary is of type CollectionCycleCountsSummary bcoz it's from that aggregation --^^^^
-        summary.ifPresent(s -> s.printOn(System.out));
-
-//        System.out.printf("getInitialMarkCount %d\n", getInitialMarkCount());
-//        System.out.printf("getRemarkCount %d\n", getRemarkCount());
-//        System.out.printf("getDefNewCount %d\n", getDefNewCount());
-
+        machine.getAggregation(CollectionCycleCountsSummaryAggregation.class).ifPresent(s -> {
+            s.printOn(System.out);
+        });
 
         //--------------------------------------------------------------------------------//
         //-----         Prints Pause Time Summary using PauseTime classes            -----//
@@ -163,43 +141,35 @@ public class Main {
         // machine.getAggregation(PauseTimeSummary.class) is of type PauseTimeSummary in Optional.
         // Retrieves the Aggregation for PauseTimeSummary. This is a RuntimeAggregation.
 
-//        machine.getAggregation(PauseTimeSummary.class).ifPresent(pauseTimeSummary -> {
-//            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
-//            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
-//            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
-//            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
-//        });
-
-        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
-        // pauseTimeSummary is of type PauseTimeSummary.
-        my_pause_time_aggregation.ifPresent(pauseTimeSummaryAggregation -> {
-            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummaryAggregation.getTotalPauseTime());
-            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummaryAggregation.getRuntimeDuration());
-            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummaryAggregation.getPercentPaused());
-            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
+        machine.getAggregation(PauseTimeSummaryAggregation.class).ifPresent(pauseTimeSummary -> {
+            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
+            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
+            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
+            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
         });
 
-        */
+//        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
+//        // pauseTimeSummary is of type PauseTimeSummary.
+//        my_pause_time_aggregation.ifPresent(pauseTimeSummaryAggregation -> {
+//            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummaryAggregation.getTotalPauseTime());
+//            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummaryAggregation.getRuntimeDuration());
+//            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummaryAggregation.getPercentPaused());
+//            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
+//        });
 
         //--------------------------------------------------------------------------------//
         //-----         Prints CMS Time Summary using CMSTime classes            -----//
         //--------------------------------------------------------------------------------//
         System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
 
-        Optional<CMSTimeSummaryAggregation> my_cms_time_aggregation = machine.getAggregation(CMSTimeSummaryAggregation.class);
-        my_cms_time_aggregation.ifPresent(cmsTimeSummaryAggregation -> {
-
-            ArrayList<Integer> total_time = convert_to_time(cmsTimeSummaryAggregation.getTotalInitialMarkTime());
-            ArrayList<Integer> min_time = convert_to_time(cmsTimeSummaryAggregation.getMinInitialMarkTime());
-            ArrayList<Integer> max_time = convert_to_time(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
-
+        machine.getAggregation(CMSTimeSummaryAggregation.class).ifPresent(cmsTimeSummaryAggregation -> {
             System.out.println(cmsTimeSummaryAggregation.getTotalInitialMarkTime());
             System.out.println(cmsTimeSummaryAggregation.getMinInitialMarkTime());
             System.out.println(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
 
-            System.out.printf("Total Initial Mark Time                  : %s h %s m %s s\n", total_time.get(0), total_time.get(1), total_time.get(2));
-            System.out.printf("Minimum initial mark duration:           :%s h %s m %s s\n", min_time.get(0), min_time.get(1), min_time.get(2));
-            System.out.printf("Maximum initial mark duration:           :%s h %s m %s s \n", max_time.get(0), max_time.get(1), max_time.get(2));
+            System.out.printf("Total Initial Mark Time                  : %s \n", to_string(cmsTimeSummaryAggregation.getTotalInitialMarkTime()));
+            System.out.printf("Minimum initial mark duration:           :%s \n", to_string(cmsTimeSummaryAggregation.getMinInitialMarkTime()));
+            System.out.printf("Maximum initial mark duration:           :%s \n", to_string(cmsTimeSummaryAggregation.getMaxInitialMarkTime()));
         });
 
         //--------------------------------------------------------------------------------//
@@ -209,7 +179,8 @@ public class Main {
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
             fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((k, v) -> {
-                System.out.printf("%s: %f\n", k, v);
+                System.out.printf("Max %s: %f, ", k, v);
+                System.out.println(to_string(v));
             });
         });
 

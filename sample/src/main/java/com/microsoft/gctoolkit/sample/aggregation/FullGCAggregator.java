@@ -16,5 +16,6 @@ public class FullGCAggregator extends Aggregator<FullGCAggregation> {
 
     public void process(GenerationalGCEvent event) {
         aggregation().recordFullGC(event.getDateTimeStamp(), event.getGCCause(), event.getDuration());
+        aggregation().record_gc_summary(event.getGarbageCollectionType());
     }
 }
