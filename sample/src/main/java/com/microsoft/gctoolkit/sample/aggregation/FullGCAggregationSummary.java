@@ -31,7 +31,7 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         return maxPauseTime;
     }
 
-    public double getMaxPauseTimeCause(GCCause cause) {
+    public double get_MaxFullGCPauseTimeCause(GCCause cause) {
         return maxPauseTime.get(cause);
     }
 

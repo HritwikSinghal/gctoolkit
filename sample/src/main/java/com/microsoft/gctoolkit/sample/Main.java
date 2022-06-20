@@ -11,10 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    private int hours;
-    private int minutes;
-    private int seconds;
-
     private int initialMarkCount = 0;
     private int remarkCount = 0;
     private int defNewCount = 0;
@@ -31,12 +27,6 @@ public class Main {
         return defNewCount;
     }
 
-    public String convert_to_time(double duration) {
-        hours = (int) duration;
-        minutes = (int) (duration * 60) % 60;
-        seconds = (int) (duration * (60 * 60)) % 60;
-        return String.format("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
-    }
 
     public void analyze(String gcLogFile) throws IOException {
         /*
@@ -162,9 +152,9 @@ public class Main {
             System.out.println(cmsTimeSummaryAggregation.getMinInitialMarkTime());
             System.out.println(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
 
-            System.out.printf("Total Initial Mark Time                  : %s \n", convert_to_time(cmsTimeSummaryAggregation.getTotalInitialMarkTime()));
-            System.out.printf("Minimum initial mark duration:           :%s \n", convert_to_time(cmsTimeSummaryAggregation.getMinInitialMarkTime()));
-            System.out.printf("Maximum initial mark duration:           :%s \n", convert_to_time(cmsTimeSummaryAggregation.getMaxInitialMarkTime()));
+            System.out.printf("Total Initial Mark Time                  : %s sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
+            System.out.printf("Minimum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMinInitialMarkTime());
+            System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxInitialMarkTime());
         });
 
         //--------------------------------------------------------------------------------//
@@ -174,9 +164,7 @@ public class Main {
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
             fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((key, value) -> {
-                System.out.printf("Max %s: %f, ", key, value);
-                System.out.println(convert_to_time(value));
-                System.out.println();
+                System.out.printf("Max %s: %f sec\n", key, value);
             });
         });
     }

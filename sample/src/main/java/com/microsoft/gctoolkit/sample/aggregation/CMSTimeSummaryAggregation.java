@@ -1,9 +1,11 @@
 package com.microsoft.gctoolkit.sample.aggregation;
 
+import com.microsoft.gctoolkit.aggregator.Collates;
 
+@Collates(CMSTimeAggregator.class)
 public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
 
-    private double totalInitialMarkTime;
+    private double total_duration;
     private double maxInitialMarkTime;
     private double minInitialMarkTime;
 
@@ -17,20 +19,8 @@ public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
         return false;
     }
 
-    @Override
-    public void recordInitialMarkDuration(double duration) {
-        totalInitialMarkTime += duration;
-        if (duration > maxInitialMarkTime) {
-            maxInitialMarkTime = duration;
-        }
-        if (duration < minInitialMarkTime) {
-            minInitialMarkTime = duration;
-        }
-    }
-
-
     public double getTotalInitialMarkTime() {
-        return totalInitialMarkTime;
+        return total_duration;
     }
 
     public double getMinInitialMarkTime() {
@@ -41,4 +31,14 @@ public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
         return maxInitialMarkTime;
     }
 
+    @Override
+    public void recordInitialMarkDuration(double duration) {
+        total_duration += duration;
+        if (duration > maxInitialMarkTime) {
+            maxInitialMarkTime = duration;
+        }
+        if (duration < minInitialMarkTime) {
+            minInitialMarkTime = duration;
+        }
+    }
 }
