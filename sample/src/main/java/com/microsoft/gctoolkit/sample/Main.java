@@ -11,21 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-
     private int hours;
     private int minutes;
     private int seconds;
-
-    private void convert_to_time(double duration) {
-        hours = (int) duration;
-        minutes = (int) (duration * 60) % 60;
-        seconds = (int) (duration * (60 * 60)) % 60;
-    }
-
-    public String to_string(double duration) {
-        convert_to_time(duration);
-        return String.format("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
-    }
 
     private int initialMarkCount = 0;
     private int remarkCount = 0;
@@ -41,6 +29,13 @@ public class Main {
 
     public int getDefNewCount() {
         return defNewCount;
+    }
+
+    public String convert_to_time(double duration) {
+        hours = (int) duration;
+        minutes = (int) (duration * 60) % 60;
+        seconds = (int) (duration * (60 * 60)) % 60;
+        return String.format("%s(h) %s(m) %s(s)%n", hours, minutes, seconds);
     }
 
     public void analyze(String gcLogFile) throws IOException {
@@ -167,9 +162,9 @@ public class Main {
             System.out.println(cmsTimeSummaryAggregation.getMinInitialMarkTime());
             System.out.println(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
 
-            System.out.printf("Total Initial Mark Time                  : %s \n", to_string(cmsTimeSummaryAggregation.getTotalInitialMarkTime()));
-            System.out.printf("Minimum initial mark duration:           :%s \n", to_string(cmsTimeSummaryAggregation.getMinInitialMarkTime()));
-            System.out.printf("Maximum initial mark duration:           :%s \n", to_string(cmsTimeSummaryAggregation.getMaxInitialMarkTime()));
+            System.out.printf("Total Initial Mark Time                  : %s \n", convert_to_time(cmsTimeSummaryAggregation.getTotalInitialMarkTime()));
+            System.out.printf("Minimum initial mark duration:           :%s \n", convert_to_time(cmsTimeSummaryAggregation.getMinInitialMarkTime()));
+            System.out.printf("Maximum initial mark duration:           :%s \n", convert_to_time(cmsTimeSummaryAggregation.getMaxInitialMarkTime()));
         });
 
         //--------------------------------------------------------------------------------//
@@ -178,12 +173,12 @@ public class Main {
         System.out.println("-----         Prints Full GC Summary    -----");
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((k, v) -> {
-                System.out.printf("Max %s: %f, ", k, v);
-                System.out.println(to_string(v));
+            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((key, value) -> {
+                System.out.printf("Max %s: %f, ", key, value);
+                System.out.println(convert_to_time(value));
+                System.out.println();
             });
         });
-
     }
 
     public static void main(String[] args) throws IOException {
