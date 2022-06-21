@@ -148,10 +148,6 @@ public class Main {
         System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
 
         machine.getAggregation(CMSTimeSummaryAggregation.class).ifPresent(cmsTimeSummaryAggregation -> {
-            System.out.println(cmsTimeSummaryAggregation.getTotalEventTime());
-            System.out.println(cmsTimeSummaryAggregation.getMinEventTime());
-            System.out.println(cmsTimeSummaryAggregation.getMaxEventTime());
-
             System.out.printf("Total Initial Mark Time                  : %s sec\n", cmsTimeSummaryAggregation.getTotalEventTime());
             System.out.printf("Minimum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMinEventTime());
             System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxEventTime());
@@ -163,15 +159,28 @@ public class Main {
         System.out.println("-----         Prints Full GC Summary    -----");
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
+
+            System.out.println();
+            System.out.println("MAX Duration for GC cause");
             fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((gc_cause, duration) -> {
-                System.out.printf("Total duration for %s: %f sec\n", gc_cause, duration);
+                System.out.printf("%s: %f sec\n", gc_cause, duration);
             });
-        });
-        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-            fullGCAggregationSummary.get_gc_summary().forEach((gc_type, count) -> {
-                System.out.printf("Total no of times of %s = %d\n", gc_type, count);
+
+            System.out.println();
+            System.out.println("GC Type Total Count");
+            fullGCAggregationSummary.get_gcTypeSummary().forEach((gc_type, count) -> {
+                System.out.printf("Total count of %s = %d\n", gc_type, count);
             });
+
+            System.out.println();
+            System.out.println("GC Cause Total Count");
+            fullGCAggregationSummary.getGccause_summary().forEach((gcCause, integer) -> {
+                System.out.printf("%s count = %d\n", gcCause, integer);
+            });
+
         });
+
+
     }
 
     public static void main(String[] args) throws IOException {
