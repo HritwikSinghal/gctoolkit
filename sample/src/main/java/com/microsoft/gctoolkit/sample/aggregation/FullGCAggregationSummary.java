@@ -16,6 +16,7 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     private Map<GCCause, Integer> gccause_summary = new HashMap<>();
 
+    private Map<GCCause, Double> gcCause_time_summary = new HashMap<>();
     private ArrayList<Long> young_occupancyBeforeCollection = new ArrayList<>();
     private ArrayList<Long> young_occupancyAfterCollection = new ArrayList<>();
 
@@ -35,6 +36,13 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     public void recordFullGC(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
         maxPauseTime.compute(cause, (k, v) -> (v == null) ? pauseTime : Math.max(v, pauseTime));
         gccause_summary.compute(cause, (key, value) -> value == null ? 1 : ++value);
+        gcCause_time_summary.compute(cause, (k, v) -> {
+            if (v == null) {
+                return new Double(0);
+            } else {
+                return v + pauseTime;
+            }
+        });
     }
 
     @Override
@@ -98,6 +106,10 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     public ArrayList<Long> get_heap_occupancyAfterCollection() {
         return heap_occupancyAfterCollection;
+    }
+
+    public Map<GCCause, Double> get_gcCause_time_summary() {
+        return gcCause_time_summary;
     }
 
 }

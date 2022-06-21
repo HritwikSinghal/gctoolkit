@@ -178,6 +178,12 @@ public class Main {
                 System.out.printf("%s count = %d\n", gcCause, integer);
             });
 
+            System.out.println();
+            System.out.println("Total Pause Time for GC cause");
+            fullGCAggregationSummary.get_gcCause_time_summary().forEach((gcCause, aDouble) -> {
+                System.out.printf("%s = %f sec\n", gcCause, aDouble);
+            });
+
         });
 
 
