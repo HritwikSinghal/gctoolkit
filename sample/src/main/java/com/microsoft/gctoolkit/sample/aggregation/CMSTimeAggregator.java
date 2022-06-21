@@ -3,7 +3,8 @@ package com.microsoft.gctoolkit.sample.aggregation;
 import com.microsoft.gctoolkit.aggregator.Aggregates;
 import com.microsoft.gctoolkit.aggregator.Aggregator;
 import com.microsoft.gctoolkit.aggregator.EventSource;
-import com.microsoft.gctoolkit.event.generational.*;
+import com.microsoft.gctoolkit.event.generational.CMSRemark;
+import com.microsoft.gctoolkit.event.generational.InitialMark;
 
 
 @Aggregates({EventSource.GENERATIONAL})

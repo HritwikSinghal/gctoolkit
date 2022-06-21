@@ -13,7 +13,7 @@ public class HeapOccupancyAfterCollectionSummaryAggregation implements HeapOccup
 
     @Override
     public void addDataPoint(GarbageCollectionTypes gcType, DateTimeStamp timeStamp, long heapOccupancy) {
-        aggregations.computeIfAbsent(gcType, key -> new XYDataSet()).add(timeStamp.getTimeStamp(),heapOccupancy);
+        aggregations.computeIfAbsent(gcType, key -> new XYDataSet()).add(timeStamp.getTimeStamp(), heapOccupancy);
     }
 
     public Map<GarbageCollectionTypes, XYDataSet> get() {

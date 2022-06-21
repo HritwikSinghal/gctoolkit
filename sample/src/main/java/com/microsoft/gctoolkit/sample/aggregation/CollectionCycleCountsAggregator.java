@@ -9,7 +9,7 @@ import com.microsoft.gctoolkit.event.generational.GenerationalGCPauseEvent;
 import com.microsoft.gctoolkit.event.shenandoah.ShenandoahCycle;
 import com.microsoft.gctoolkit.event.zgc.ZGCCycle;
 
-@Aggregates({EventSource.G1GC,EventSource.GENERATIONAL,EventSource.ZGC,EventSource.SHENANDOAH})
+@Aggregates({EventSource.G1GC, EventSource.GENERATIONAL, EventSource.ZGC, EventSource.SHENANDOAH})
 public class CollectionCycleCountsAggregator extends Aggregator<CollectionCycleCountsAggregation> {
 
     public CollectionCycleCountsAggregator(CollectionCycleCountsAggregation results) {
@@ -17,8 +17,8 @@ public class CollectionCycleCountsAggregator extends Aggregator<CollectionCycleC
         register(GenerationalGCPauseEvent.class, this::count);
         register(G1GCPauseEvent.class, this::count);
         register(G1GCConcurrentEvent.class, this::count);
-        register(ZGCCycle.class,this::count);
-        register(ShenandoahCycle.class,this::count);
+        register(ZGCCycle.class, this::count);
+        register(ShenandoahCycle.class, this::count);
     }
 
     private void count(ZGCCycle event) {

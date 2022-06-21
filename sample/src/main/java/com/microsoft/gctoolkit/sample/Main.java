@@ -15,6 +15,22 @@ public class Main {
     private int remarkCount = 0;
     private int defNewCount = 0;
 
+    public static void main(String[] args) throws IOException {
+        String userInput = args.length > 0 ? args[0] : "";
+        String gcLogFile = System.getProperty("gcLogFile", userInput);
+
+        if (gcLogFile.isBlank()) {
+            throw new IllegalArgumentException("This sample requires a path to a GC log file.");
+        }
+
+        if (Files.notExists(Path.of(gcLogFile))) {
+            throw new IllegalArgumentException(String.format("File %s not found.", gcLogFile));
+        }
+
+        Main main = new Main();
+        main.analyze(gcLogFile);
+    }
+
     public int getInitialMarkCount() {
         return initialMarkCount;
     }
@@ -26,7 +42,6 @@ public class Main {
     public int getDefNewCount() {
         return defNewCount;
     }
-
 
     public void analyze(String gcLogFile) throws IOException {
         /*
@@ -187,22 +202,6 @@ public class Main {
         });
 
 
-    }
-
-    public static void main(String[] args) throws IOException {
-        String userInput = args.length > 0 ? args[0] : "";
-        String gcLogFile = System.getProperty("gcLogFile", userInput);
-
-        if (gcLogFile.isBlank()) {
-            throw new IllegalArgumentException("This sample requires a path to a GC log file.");
-        }
-
-        if (Files.notExists(Path.of(gcLogFile))) {
-            throw new IllegalArgumentException(String.format("File %s not found.", gcLogFile));
-        }
-
-        Main main = new Main();
-        main.analyze(gcLogFile);
     }
 
 }

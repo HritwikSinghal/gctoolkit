@@ -51,9 +51,8 @@ import com.microsoft.gctoolkit.time.DateTimeStamp;
  *     public boolean isEmpty() { return getRuntimeDuration() {@literal <}= 0.0; }
  * }
  * </code></pre>
-
  */
-public abstract class RuntimeAggregation  implements Aggregation {
+public abstract class RuntimeAggregation implements Aggregation {
 
     private volatile DateTimeStamp timeOfFirstEvent = null;
     private volatile DateTimeStamp timeOfLastEvent = new DateTimeStamp(0d);
@@ -65,8 +64,9 @@ public abstract class RuntimeAggregation  implements Aggregation {
 
     /**
      * RuntimeAggregation collates the time of an event and the duration of the event.
+     *
      * @param eventTime The time a JVMEvent occurred.
-     * @param duration The duration of the JVMEvent.
+     * @param duration  The duration of the JVMEvent.
      */
     public void record(DateTimeStamp eventTime, double duration) {
 
@@ -87,6 +87,7 @@ public abstract class RuntimeAggregation  implements Aggregation {
 
     /**
      * Return the time of the first event of the GC log.
+     *
      * @return The time of the first event.
      */
     public DateTimeStamp getTimeOfFirstEvent() {
@@ -97,6 +98,7 @@ public abstract class RuntimeAggregation  implements Aggregation {
      * Return the time of the last event of the GC log.
      * Note well! The time of the last event is not the start time of the event, but is the
      * time the event ended (event start time plus the event duration).
+     *
      * @return The time of the last event.
      */
     public DateTimeStamp getTimeOfLastEvent() {
@@ -106,6 +108,7 @@ public abstract class RuntimeAggregation  implements Aggregation {
     /**
      * Return the duration of the GC log. Fundamentally, this is the difference between the
      * time of the last event and the time of the first event.
+     *
      * @return The duration of the JVM runtime represented by the log.
      */
     public double getRuntimeDuration() {

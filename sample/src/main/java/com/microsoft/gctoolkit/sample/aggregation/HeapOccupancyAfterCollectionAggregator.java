@@ -8,15 +8,15 @@ import com.microsoft.gctoolkit.event.generational.GenerationalGCPauseEvent;
 import com.microsoft.gctoolkit.event.shenandoah.ShenandoahCycle;
 import com.microsoft.gctoolkit.event.zgc.ZGCCycle;
 
-@Aggregates({EventSource.G1GC,EventSource.GENERATIONAL,EventSource.ZGC,EventSource.SHENANDOAH})
+@Aggregates({EventSource.G1GC, EventSource.GENERATIONAL, EventSource.ZGC, EventSource.SHENANDOAH})
 public class HeapOccupancyAfterCollectionAggregator extends Aggregator<HeapOccupancyAfterCollectionAggregation> {
 
     public HeapOccupancyAfterCollectionAggregator(HeapOccupancyAfterCollectionAggregation results) {
         super(results);
         register(GenerationalGCPauseEvent.class, this::extractHeapOccupancy);
         register(G1GCPauseEvent.class, this::extractHeapOccupancy);
-        register(ZGCCycle.class,this::extractHeapOccupancy);
-        register(ShenandoahCycle.class,this::extractHeapOccupancy);
+        register(ZGCCycle.class, this::extractHeapOccupancy);
+        register(ShenandoahCycle.class, this::extractHeapOccupancy);
     }
 
     private void extractHeapOccupancy(GenerationalGCPauseEvent event) {
