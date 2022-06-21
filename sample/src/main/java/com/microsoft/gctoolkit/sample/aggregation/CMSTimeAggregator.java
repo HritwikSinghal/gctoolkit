@@ -11,11 +11,12 @@ public class CMSTimeAggregator extends Aggregator<CMSTimeAggregation> {
 
     public CMSTimeAggregator(CMSTimeAggregation aggregation) {
         super(aggregation);
-        register(CMSRemark.class, this::process);
+        register(InitialMark.class, this::process);
+        register(InitialMark.class, this::process);
     }
 
-    public void process(CMSRemark event) {
-        aggregation().recordInitialMarkDuration(event.getDuration());
+    public void process(GenerationalGCPauseEvent event) {
+        aggregation().recordEventDuration(event.getDuration());
     }
 
 }

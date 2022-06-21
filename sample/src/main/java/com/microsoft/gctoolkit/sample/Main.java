@@ -148,13 +148,13 @@ public class Main {
         System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
 
         machine.getAggregation(CMSTimeSummaryAggregation.class).ifPresent(cmsTimeSummaryAggregation -> {
-            System.out.println(cmsTimeSummaryAggregation.getTotalInitialMarkTime());
-            System.out.println(cmsTimeSummaryAggregation.getMinInitialMarkTime());
-            System.out.println(cmsTimeSummaryAggregation.getMaxInitialMarkTime());
+            System.out.println(cmsTimeSummaryAggregation.getTotalEventTime());
+            System.out.println(cmsTimeSummaryAggregation.getMinEventTime());
+            System.out.println(cmsTimeSummaryAggregation.getMaxEventTime());
 
-            System.out.printf("Total Initial Mark Time                  : %s sec\n", cmsTimeSummaryAggregation.getTotalInitialMarkTime());
-            System.out.printf("Minimum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMinInitialMarkTime());
-            System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxInitialMarkTime());
+            System.out.printf("Total Initial Mark Time                  : %s sec\n", cmsTimeSummaryAggregation.getTotalEventTime());
+            System.out.printf("Minimum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMinEventTime());
+            System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxEventTime());
         });
 
         //--------------------------------------------------------------------------------//
@@ -163,8 +163,13 @@ public class Main {
         System.out.println("-----         Prints Full GC Summary    -----");
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((key, value) -> {
-                System.out.printf("Max %s: %f sec\n", key, value);
+            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((gc_cause, duration) -> {
+                System.out.printf("Total duration for %s: %f sec\n", gc_cause, duration);
+            });
+        });
+        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
+            fullGCAggregationSummary.get_gc_summary().forEach((gc_type, count) -> {
+                System.out.printf("Total no of times of %s = %d\n", gc_type, count);
             });
         });
     }
