@@ -40,19 +40,11 @@ public class Main {
 
     public void write_to_file(Path fileName, String text) {
         try {
-            if (!fileName.toFile().isFile()) {
-                System.out.println();
-                System.out.printf("Creating %s....\n", fileName.toString());
-                if (fileName.toFile().createNewFile())
-                    System.out.printf("Successfully Created %s.\n", fileName.toString());
-                else
-                    throw new RuntimeException("Cannot Create processed Log file");
-            }
-
-            Files.writeString(fileName, text, StandardOpenOption.WRITE);
-            System.out.println(text);
+            Files.writeString(fileName, text, StandardOpenOption.APPEND);
+            System.out.print(text);
         } catch (IOException e) {
-            System.exit(1);
+            System.out.println("Exiting since Cant write to file.");
+            System.exit(0);
         }
     }
 
@@ -84,6 +76,9 @@ public class Main {
           The log files can be either in text, zip, or gzip format.
          */
         GCLogFileProcessed_path = Paths.get(gcLogFile + ".processed");
+        GCLogFileProcessed_path.toFile().delete();
+        GCLogFileProcessed_path.toFile().createNewFile();
+
         GCLogFile logFile = new SingleGCLogFile(Path.of(gcLogFile));
         GCToolKit gcToolKit = new GCToolKit();
 
@@ -243,9 +238,9 @@ public class Main {
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
             write_to_file(GCLogFileProcessed_path, "\n");
-            write_to_file(GCLogFileProcessed_path, "Key Performance Indicators");
-            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%", throughput));
-            write_to_file(GCLogFileProcessed_path, String.format("Max Pause time : %f sec", fullGCAggregationSummary.get_MaxPauseTime()));
+            write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
+            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", throughput));
+            write_to_file(GCLogFileProcessed_path, String.format("Max Pause time : %f sec\n", fullGCAggregationSummary.get_MaxPauseTime()));
         });
     }
 
