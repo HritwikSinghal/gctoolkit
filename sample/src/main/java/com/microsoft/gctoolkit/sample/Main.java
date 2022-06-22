@@ -15,28 +15,8 @@ import java.nio.file.StandardOpenOption;
 public class Main {
 
     private GCStats full_gc_stats = new GCStats();
-    private int initialMarkCount = 0;
-    private int remarkCount = 0;
-    private int defNewCount = 0;
-
-    private double throughput = 0.00;
     private Path GCLogFileProcessed_path;
 
-    public int getInitialMarkCount() {
-        return initialMarkCount;
-    }
-
-    public int getRemarkCount() {
-        return remarkCount;
-    }
-
-    public int getDefNewCount() {
-        return defNewCount;
-    }
-
-    public double getThroughput() {
-        return throughput;
-    }
 
     public void write_to_file(Path fileName, String text) {
         try {
@@ -110,13 +90,13 @@ public class Main {
                         System.out.printf(message, gcType, dataSet.size());
                         switch (gcType) {
                             case DefNew:
-                                defNewCount = dataSet.size();
+                                full_gc_stats.setDefNewCount(dataSet.size());
                                 break;
                             case InitialMark:
-                                initialMarkCount = dataSet.size();
+                                full_gc_stats.setInitialMarkCount((dataSet.size()));
                                 break;
                             case Remark:
-                                remarkCount = dataSet.size();
+                                full_gc_stats.setRemarkCount((dataSet.size()));
                                 break;
                             default:
                                 System.out.println(gcType + " not managed");
@@ -176,7 +156,7 @@ public class Main {
             System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
-            throughput = pauseTimeSummary.getThroughput();
+            full_gc_stats.setThroughput(pauseTimeSummary.getThroughput());
         });
 
 //        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
@@ -239,7 +219,7 @@ public class Main {
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
             write_to_file(GCLogFileProcessed_path, "\n");
             write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
-            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", throughput));
+            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getThroughput()));
             write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", fullGCAggregationSummary.getAverage_GC_pause_time()));
             write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", fullGCAggregationSummary.get_MaxGCPauseTime()));
         });
