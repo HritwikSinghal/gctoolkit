@@ -8,7 +8,6 @@ public class FullGCStats {
     private double fullGC_throughput = 0;
     private double fullGC_avg_pause_time = 0;
     private double fullGC_max_pause_time = 0;
-    private double throughput = 0.00;
 
     // ------------------------------------------------------------------------- //
     public int getInitialMarkCount() {
@@ -58,13 +57,5 @@ public class FullGCStats {
 
     public void setFullGC_max_pause_time(double fullGC_max_pause_time) {
         this.fullGC_max_pause_time = fullGC_max_pause_time;
-    }
-
-    public double getThroughput() {
-        return throughput;
-    }
-
-    public void setThroughput(double throughput) {
-        this.throughput = throughput;
     }
 }

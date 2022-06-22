@@ -153,7 +153,7 @@ public class Main {
             System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
-            full_gc_stats.setThroughput(pauseTimeSummary.getThroughput());
+            full_gc_stats.setFullGC_throughput(pauseTimeSummary.getThroughput());
         });
 
 //        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
@@ -222,7 +222,7 @@ public class Main {
     public void display() {
         write_to_file(GCLogFileProcessed_path, "\n");
         write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
-        write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getThroughput()));
+        write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getFullGC_throughput()));
         write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", full_gc_stats.getFullGC_avg_pause_time()));
         write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", full_gc_stats.getFullGC_max_pause_time()));
     }
