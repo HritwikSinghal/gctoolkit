@@ -9,11 +9,57 @@ import com.microsoft.gctoolkit.sample.aggregation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class Main {
+
+    private GCStats full_gc_stats = new GCStats();
     private int initialMarkCount = 0;
     private int remarkCount = 0;
     private int defNewCount = 0;
+
+    private double throughput = 0.00;
+    private Path GCLogFileProcessed_path;
+
+    public int getInitialMarkCount() {
+        return initialMarkCount;
+    }
+
+    public int getRemarkCount() {
+        return remarkCount;
+    }
+
+    public int getDefNewCount() {
+        return defNewCount;
+    }
+
+    public double getThroughput() {
+        return throughput;
+    }
+
+    public void write_to_file(Path fileName, String text) {
+        try {
+            if (!fileName.toFile().isFile()) {
+                System.out.println();
+                System.out.printf("Creating %s....\n", fileName.toString());
+                if (fileName.toFile().createNewFile())
+                    System.out.printf("Successfully Created %s.\n", fileName.toString());
+                else
+                    throw new RuntimeException("Cannot Create processed Log file");
+            }
+
+            Files.writeString(fileName, text, StandardOpenOption.WRITE);
+            System.out.println(text);
+        } catch (IOException e) {
+            System.exit(1);
+        }
+    }
+
+    public String read_from_file(Path fileName, String text) throws IOException {
+        // Reading the content of the file
+        return Files.readString(fileName);
+    }
 
     public static void main(String[] args) throws IOException {
         String userInput = args.length > 0 ? args[0] : "";
@@ -31,24 +77,13 @@ public class Main {
         main.analyze(gcLogFile);
     }
 
-    public int getInitialMarkCount() {
-        return initialMarkCount;
-    }
-
-    public int getRemarkCount() {
-        return remarkCount;
-    }
-
-    public int getDefNewCount() {
-        return defNewCount;
-    }
-
     public void analyze(String gcLogFile) throws IOException {
         /*
           GC log files can come in  one of two types: single or series of rolling logs.
           In this sample, we load a single log file.
           The log files can be either in text, zip, or gzip format.
          */
+        GCLogFileProcessed_path = Paths.get(gcLogFile + ".processed");
         GCLogFile logFile = new SingleGCLogFile(Path.of(gcLogFile));
         GCToolKit gcToolKit = new GCToolKit();
 
@@ -146,6 +181,7 @@ public class Main {
             System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
             System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
             System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
+            throughput = pauseTimeSummary.getThroughput();
         });
 
 //        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
@@ -177,28 +213,43 @@ public class Main {
 
             System.out.println();
             System.out.println("Total Pause Time for GC cause");
-            fullGCAggregationSummary.get_gcCause_time_summary().forEach((gcCause, aDouble) -> {
+            fullGCAggregationSummary.get_GCCause_total_pause_time_summary().forEach((gcCause, aDouble) -> {
                 System.out.printf("%s = %f sec\n", gcCause, aDouble);
             });
 
             System.out.println();
             System.out.println("MAX Duration for GC cause");
-            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((gc_cause, duration) -> {
+            fullGCAggregationSummary.get_GCCause_max_PauseTime_duration_summary().forEach((gc_cause, duration) -> {
                 System.out.printf("%s: %f sec\n", gc_cause, duration);
             });
 
             System.out.println();
             System.out.println("GC Cause Total Count");
-            fullGCAggregationSummary.getGccause_summary().forEach((gcCause, integer) -> {
+            fullGCAggregationSummary.get_GCCause_total_count_summary().forEach((gcCause, integer) -> {
                 System.out.printf("%s count = %d\n", gcCause, integer);
             });
 
             System.out.println();
             System.out.println("GC Type Total Count");
-            fullGCAggregationSummary.get_gcTypeSummary().forEach((gc_type, count) -> {
+            fullGCAggregationSummary.get_GCType_total_count_summary().forEach((gc_type, count) -> {
                 System.out.printf("Total count of %s = %d\n", gc_type, count);
             });
+
+        });
+
+        // -------------------------------------------------------------------------------------------------- //
+        // Write to file from below this line.
+        // -------------------------------------------------------------------------------------------------- //
+
+        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
+            write_to_file(GCLogFileProcessed_path, "\n");
+            write_to_file(GCLogFileProcessed_path, "Key Performance Indicators");
+            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%", throughput));
+            write_to_file(GCLogFileProcessed_path, String.format("Max Pause time : %f sec", fullGCAggregationSummary.get_MaxPauseTime()));
         });
     }
 
+    public GCStats getFull_gc_stats() {
+        return full_gc_stats;
+    }
 }

@@ -10,13 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FullGCAggregationSummary implements FullGCAggregation {
+    private Map<GCCause, Double> GCCause_total_pause_time_summary = new HashMap<>();
 
-    private Map<GCCause, Double> maxPauseTime = new HashMap<>();
-    private Map<GarbageCollectionTypes, Integer> gctype_summary = new HashMap<>();
+    private Map<GCCause, Double> GCCause_max_PauseTime_duration_summary = new HashMap<>();
 
-    private Map<GCCause, Integer> gccause_summary = new HashMap<>();
+    private Map<GCCause, Integer> GCCause_total_count_summary = new HashMap<>();
 
-    private Map<GCCause, Double> gcCause_time_summary = new HashMap<>();
+    private Map<GarbageCollectionTypes, Integer> GCType_total_count_summary = new HashMap<>();
+
+    private double max_pause_time = 0.0;
+    private double average_pause_time = 0.0;
+
+    // ------------------------------------------------------------------ //
+
+
     private ArrayList<Long> young_occupancyBeforeCollection = new ArrayList<>();
     private ArrayList<Long> young_occupancyAfterCollection = new ArrayList<>();
 
@@ -26,22 +33,28 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     private ArrayList<Long> heap_occupancyBeforeCollection = new ArrayList<>();
     private ArrayList<Long> heap_occupancyAfterCollection = new ArrayList<>();
 
+    // ------------------------------------------------------------------ //
 
     @Override
-    public void record_gc_summary(GarbageCollectionTypes garbageCollectionType) {
-        gctype_summary.compute(garbageCollectionType, (key, value) -> value == null ? 1 : ++value);
+    public void record_FullGC_Type(GarbageCollectionTypes garbageCollectionType) {
+        GCType_total_count_summary.compute(garbageCollectionType, (key, value) -> value == null ? 1 : ++value);
     }
 
     @Override
-    public void recordFullGC(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
-        maxPauseTime.compute(cause, (k, v) -> (v == null) ? pauseTime : Math.max(v, pauseTime));
-        gccause_summary.compute(cause, (key, value) -> value == null ? 1 : ++value);
-        gcCause_time_summary.compute(cause, (k, v) -> {
+    public void record_FullGC_Cause(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
+        GCCause_total_count_summary.compute(cause, (key, value) -> value == null ? 1 : ++value);
+        GCCause_max_PauseTime_duration_summary.compute(cause, (k, v) -> (v == null) ? pauseTime : Math.max(v, pauseTime));
+        GCCause_total_pause_time_summary.compute(cause, (k, v) -> {
             if (v == null) {
-                return new Double(0);
+                return (double) 0;
             } else {
                 return v + pauseTime;
             }
+        });
+
+        GCCause_max_PauseTime_duration_summary.forEach((gcCause, max_time) -> {
+            if (max_time > max_pause_time)
+                max_pause_time = max_time;
         });
     }
 
@@ -57,6 +70,7 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         heap_occupancyAfterCollection.add(heap.getOccupancyAfterCollection());
     }
 
+    // ------------------------------------------------------------------ //
 
     @Override
     public boolean hasWarning() {
@@ -68,21 +82,24 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         return false;
     }
 
-    public Map<GCCause, Double> get_MaxFullGCPauseTime() {
-        return maxPauseTime;
+    public Map<GCCause, Double> get_GCCause_max_PauseTime_duration_summary() {
+        return GCCause_max_PauseTime_duration_summary;
     }
 
-    public double get_MaxFullGCPauseTimeCause(GCCause cause) {
-        return maxPauseTime.get(cause);
+    public Map<GCCause, Double> get_GCCause_total_pause_time_summary() {
+        return GCCause_total_pause_time_summary;
     }
 
-    public Map<GarbageCollectionTypes, Integer> get_gcTypeSummary() {
-        return gctype_summary;
+
+    public Map<GCCause, Integer> get_GCCause_total_count_summary() {
+        return GCCause_total_count_summary;
     }
 
-    public Map<GCCause, Integer> getGccause_summary() {
-        return gccause_summary;
+    public Map<GarbageCollectionTypes, Integer> get_GCType_total_count_summary() {
+        return GCType_total_count_summary;
     }
+
+    // ------------------------------------------------------------------ //
 
     public ArrayList<Long> get_young_occupancyBeforeCollection() {
         return young_occupancyBeforeCollection;
@@ -108,8 +125,12 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         return heap_occupancyAfterCollection;
     }
 
-    public Map<GCCause, Double> get_gcCause_time_summary() {
-        return gcCause_time_summary;
+    // ------------------------------------------------------------------ //
+    public double get_MaxPauseTime() {
+        return max_pause_time;
     }
 
+    public double getAverage_pause_time() {
+        return average_pause_time;
+    }
 }

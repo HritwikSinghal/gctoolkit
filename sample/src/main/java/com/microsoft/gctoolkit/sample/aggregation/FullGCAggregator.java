@@ -31,7 +31,7 @@ public class FullGCAggregator extends Aggregator<FullGCAggregation> {
 //        System.out.println(event.getCpuSummary().toString());
 
 
-        aggregation().recordFullGC(event.getDateTimeStamp(), event.getGCCause(), event.getDuration());
-        aggregation().record_gc_summary(event.getGarbageCollectionType());
+        aggregation().record_FullGC_Cause(event.getDateTimeStamp(), event.getGCCause(), event.getDuration());
+        aggregation().record_FullGC_Type(event.getGarbageCollectionType());
     }
 }

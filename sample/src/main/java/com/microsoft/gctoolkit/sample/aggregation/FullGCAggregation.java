@@ -9,9 +9,9 @@ import com.microsoft.gctoolkit.time.DateTimeStamp;
 
 @Collates(FullGCAggregator.class)
 public interface FullGCAggregation extends Aggregation {
-    void recordFullGC(DateTimeStamp timeStamp, GCCause cause, double pauseTime);
+    void record_FullGC_Cause(DateTimeStamp timeStamp, GCCause cause, double pauseTime);
 
-    void record_gc_summary(GarbageCollectionTypes garbageCollectionType);
+    void record_FullGC_Type(GarbageCollectionTypes garbageCollectionType);
 
     void recordHeaps(MemoryPoolSummary young, MemoryPoolSummary tenured, MemoryPoolSummary heap);
 }
