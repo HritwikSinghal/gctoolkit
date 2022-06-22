@@ -176,15 +176,15 @@ public class Main {
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
 
             System.out.println();
-            System.out.println("MAX Duration for GC cause");
-            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((gc_cause, duration) -> {
-                System.out.printf("%s: %f sec\n", gc_cause, duration);
+            System.out.println("Total Pause Time for GC cause");
+            fullGCAggregationSummary.get_gcCause_time_summary().forEach((gcCause, aDouble) -> {
+                System.out.printf("%s = %f sec\n", gcCause, aDouble);
             });
 
             System.out.println();
-            System.out.println("GC Type Total Count");
-            fullGCAggregationSummary.get_gcTypeSummary().forEach((gc_type, count) -> {
-                System.out.printf("Total count of %s = %d\n", gc_type, count);
+            System.out.println("MAX Duration for GC cause");
+            fullGCAggregationSummary.get_MaxFullGCPauseTime().forEach((gc_cause, duration) -> {
+                System.out.printf("%s: %f sec\n", gc_cause, duration);
             });
 
             System.out.println();
@@ -194,14 +194,11 @@ public class Main {
             });
 
             System.out.println();
-            System.out.println("Total Pause Time for GC cause");
-            fullGCAggregationSummary.get_gcCause_time_summary().forEach((gcCause, aDouble) -> {
-                System.out.printf("%s = %f sec\n", gcCause, aDouble);
+            System.out.println("GC Type Total Count");
+            fullGCAggregationSummary.get_gcTypeSummary().forEach((gc_type, count) -> {
+                System.out.printf("Total count of %s = %d\n", gc_type, count);
             });
-
         });
-
-
     }
 
 }
