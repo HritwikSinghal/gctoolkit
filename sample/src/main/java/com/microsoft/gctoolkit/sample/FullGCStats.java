@@ -1,6 +1,6 @@
 package com.microsoft.gctoolkit.sample;
 
-public class GCStats {
+public class FullGCStats {
     private int initialMarkCount = 0;
     private int remarkCount = 0;
     private int defNewCount = 0;
@@ -67,5 +67,4 @@ public class GCStats {
     public void setThroughput(double throughput) {
         this.throughput = throughput;
     }
-
 }
