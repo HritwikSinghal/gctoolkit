@@ -17,7 +17,6 @@ public class Main {
     private GCStats full_gc_stats = new GCStats();
     private Path GCLogFileProcessed_path;
 
-
     public void write_to_file(Path fileName, String text) {
         try {
             Files.writeString(fileName, text, StandardOpenOption.APPEND);
@@ -26,11 +25,6 @@ public class Main {
             System.out.println("Exiting since Cant write to file.");
             System.exit(0);
         }
-    }
-
-    public String read_from_file(Path fileName, String text) throws IOException {
-        // Reading the content of the file
-        return Files.readString(fileName);
     }
 
     public static void main(String[] args) throws IOException {
@@ -47,6 +41,7 @@ public class Main {
 
         Main main = new Main();
         main.analyze(gcLogFile);
+        main.display();
     }
 
     public void analyze(String gcLogFile) throws IOException {
@@ -57,7 +52,8 @@ public class Main {
          */
         GCLogFileProcessed_path = Paths.get(gcLogFile + ".processed");
         GCLogFileProcessed_path.toFile().delete();
-        GCLogFileProcessed_path.toFile().createNewFile();
+        if (!GCLogFileProcessed_path.toFile().createNewFile())
+            throw new IOException("Cannot Create log processed file");
 
         GCLogFile logFile = new SingleGCLogFile(Path.of(gcLogFile));
         GCToolKit gcToolKit = new GCToolKit();
@@ -217,15 +213,15 @@ public class Main {
         // -------------------------------------------------------------------------------------------------- //
 
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-            write_to_file(GCLogFileProcessed_path, "\n");
-            write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
-            write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getThroughput()));
             write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", fullGCAggregationSummary.getAverage_GC_pause_time()));
             write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", fullGCAggregationSummary.get_MaxGCPauseTime()));
         });
     }
 
-    public GCStats getFull_gc_stats() {
-        return full_gc_stats;
+    public void display() {
+        write_to_file(GCLogFileProcessed_path, "\n");
+        write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
+        write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getThroughput()));
     }
+
 }
