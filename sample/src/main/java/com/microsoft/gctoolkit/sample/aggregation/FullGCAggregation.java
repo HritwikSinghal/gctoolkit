@@ -13,5 +13,8 @@ public interface FullGCAggregation extends Aggregation {
 
     void record_FullGC_Type(GarbageCollectionTypes garbageCollectionType);
 
+    void record_FullGC_pauseTime(double pauseTime);
+
     void recordHeaps(MemoryPoolSummary young, MemoryPoolSummary tenured, MemoryPoolSummary heap);
+
 }

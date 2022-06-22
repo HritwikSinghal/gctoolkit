@@ -240,7 +240,8 @@ public class Main {
             write_to_file(GCLogFileProcessed_path, "\n");
             write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
             write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", throughput));
-            write_to_file(GCLogFileProcessed_path, String.format("Max Pause time : %f sec\n", fullGCAggregationSummary.get_MaxPauseTime()));
+            write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", fullGCAggregationSummary.getAverage_GC_pause_time()));
+            write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", fullGCAggregationSummary.get_MaxGCPauseTime()));
         });
     }
 

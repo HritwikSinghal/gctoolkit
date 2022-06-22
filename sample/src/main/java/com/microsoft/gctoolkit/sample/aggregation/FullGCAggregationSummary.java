@@ -8,6 +8,7 @@ import com.microsoft.gctoolkit.time.DateTimeStamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalDouble;
 
 public class FullGCAggregationSummary implements FullGCAggregation {
     private Map<GCCause, Double> GCCause_total_pause_time_summary = new HashMap<>();
@@ -18,8 +19,10 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     private Map<GarbageCollectionTypes, Integer> GCType_total_count_summary = new HashMap<>();
 
-    private double max_pause_time = 0.0;
-    private double average_pause_time = 0.0;
+    private ArrayList<Double> pause_time_summary = new ArrayList<>();
+
+    private double max_GC_pause_time = 0.0;
+    private double average_GC_pause_time = 0.0;
 
     // ------------------------------------------------------------------ //
 
@@ -42,8 +45,14 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     @Override
     public void record_FullGC_Cause(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
-        GCCause_total_count_summary.compute(cause, (key, value) -> value == null ? 1 : ++value);
-        GCCause_max_PauseTime_duration_summary.compute(cause, (k, v) -> (v == null) ? pauseTime : Math.max(v, pauseTime));
+        GCCause_total_count_summary.compute(cause, (key, value) -> {
+            return value == null ? 1 : ++value;
+        });
+
+        GCCause_max_PauseTime_duration_summary.compute(cause, (k, v) -> {
+            return (v == null) ? pauseTime : Math.max(v, pauseTime);
+        });
+
         GCCause_total_pause_time_summary.compute(cause, (k, v) -> {
             if (v == null) {
                 return (double) 0;
@@ -53,8 +62,8 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         });
 
         GCCause_max_PauseTime_duration_summary.forEach((gcCause, max_time) -> {
-            if (max_time > max_pause_time)
-                max_pause_time = max_time;
+            if (max_time > max_GC_pause_time)
+                max_GC_pause_time = max_time;
         });
     }
 
@@ -70,6 +79,11 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         heap_occupancyAfterCollection.add(heap.getOccupancyAfterCollection());
     }
 
+    @Override
+    public void record_FullGC_pauseTime(double pauseTime) {
+        pause_time_summary.add(pauseTime);
+    }
+
     // ------------------------------------------------------------------ //
 
     @Override
@@ -80,6 +94,19 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    public double get_MaxGCPauseTime() {
+        return max_GC_pause_time;
+    }
+
+    public double getAverage_GC_pause_time() {
+        OptionalDouble average = pause_time_summary
+                .stream()
+                .mapToDouble(a -> a)
+                .average();
+
+        return average.isPresent() ? average.getAsDouble() : 0;
     }
 
     public Map<GCCause, Double> get_GCCause_max_PauseTime_duration_summary() {
@@ -126,11 +153,4 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     }
 
     // ------------------------------------------------------------------ //
-    public double get_MaxPauseTime() {
-        return max_pause_time;
-    }
-
-    public double getAverage_pause_time() {
-        return average_pause_time;
-    }
 }
