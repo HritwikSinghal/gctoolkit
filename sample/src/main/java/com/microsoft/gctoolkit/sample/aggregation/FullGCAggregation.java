@@ -17,4 +17,5 @@ public interface FullGCAggregation extends Aggregation {
 
     void recordHeaps(MemoryPoolSummary young, MemoryPoolSummary tenured, MemoryPoolSummary heap);
 
+    void record_GCPauseDuration_TimeRange_summary(double pauseTime);
 }

@@ -38,6 +38,17 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     // ------------------------------------------------------------------ //
 
+    private HashMap<Double, Integer> GCPauseDuration_TimeRange_summary = new HashMap<>();
+
+    // ------------------------------------------------------------------ //
+    // ------------------------------------------------------------------ //
+    // ------------------------------------------------------------------ //
+    // ------------------------------------------------------------------ //
+    // ------------------------------------------------------------------ //
+
+
+    // ------------------------------------------- All record methods below (no set methods) ------------------------------------------- //
+
     @Override
     public void record_FullGC_Type(GarbageCollectionTypes garbageCollectionType) {
         GCType_total_count_summary.compute(garbageCollectionType, (key, value) -> value == null ? 1 : ++value);
@@ -45,13 +56,9 @@ public class FullGCAggregationSummary implements FullGCAggregation {
 
     @Override
     public void record_FullGC_Cause(DateTimeStamp timeStamp, GCCause cause, double pauseTime) {
-        GCCause_total_count_summary.compute(cause, (key, value) -> {
-            return value == null ? 1 : ++value;
-        });
+        GCCause_total_count_summary.compute(cause, (key, value) -> value == null ? 1 : ++value);
 
-        GCCause_max_PauseTime_duration_summary.compute(cause, (k, v) -> {
-            return (v == null) ? pauseTime : Math.max(v, pauseTime);
-        });
+        GCCause_max_PauseTime_duration_summary.compute(cause, (k, v) -> (v == null) ? pauseTime : Math.max(v, pauseTime));
 
         GCCause_total_pause_time_summary.compute(cause, (k, v) -> {
             if (v == null) {
@@ -84,6 +91,15 @@ public class FullGCAggregationSummary implements FullGCAggregation {
         pause_time_summary.add(pauseTime);
     }
 
+    @Override
+    public void record_GCPauseDuration_TimeRange_summary(double pauseTime) {
+        // Attempts to compute a mapping for the specified key and its current mapped value
+        // (or null if there is no current mapping). For example,
+        // to either create or append a String msg to a value mapping:
+        // map.compute(key, (k, v) -> (v == null) ? msg : v.concat(msg))
+
+        GCPauseDuration_TimeRange_summary.compute(pauseTime, (key, value) -> value == null ? 1 : ++value);
+    }
     // ------------------------------------------------------------------ //
 
     @Override
@@ -95,6 +111,8 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     public boolean isEmpty() {
         return false;
     }
+
+    // ------------------------------------------- Only Get methods below ------------------------------------------- //
 
     public double get_MaxGCPauseTime() {
         return max_GC_pause_time;
@@ -153,4 +171,8 @@ public class FullGCAggregationSummary implements FullGCAggregation {
     }
 
     // ------------------------------------------------------------------ //
+
+    public HashMap<Double, Integer> getGCPauseDuration_TimeRange_summary() {
+        return GCPauseDuration_TimeRange_summary;
+    }
 }

@@ -34,5 +34,6 @@ public class FullGCAggregator extends Aggregator<FullGCAggregation> {
         aggregation().record_FullGC_Cause(event.getDateTimeStamp(), event.getGCCause(), event.getDuration());
         aggregation().record_FullGC_Type(event.getGarbageCollectionType());
         aggregation().record_FullGC_pauseTime(event.getDuration());
+        aggregation().record_GCPauseDuration_TimeRange_summary(event.getDuration());
     }
 }

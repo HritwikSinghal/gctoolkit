@@ -17,6 +17,7 @@ public class Main {
     private FullGCStats full_gc_stats = new FullGCStats();
     private Path GCLogFileProcessed_path;
 
+
     public void write_to_file(Path fileName, String text) {
         try {
             Files.writeString(fileName, text, StandardOpenOption.APPEND);
@@ -216,6 +217,7 @@ public class Main {
         machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
             full_gc_stats.setFullGC_avg_pause_time(fullGCAggregationSummary.getAverage_GC_pause_time());
             full_gc_stats.setFullGC_max_pause_time(fullGCAggregationSummary.get_MaxGCPauseTime());
+            full_gc_stats.fill_GCPauseDuration_TimeRange_summary(fullGCAggregationSummary.getGCPauseDuration_TimeRange_summary());
         });
     }
 
@@ -225,6 +227,12 @@ public class Main {
         write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getFullGC_throughput()));
         write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", full_gc_stats.getFullGC_avg_pause_time()));
         write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", full_gc_stats.getFullGC_max_pause_time()));
-    }
 
+
+        write_to_file(GCLogFileProcessed_path, "\n");
+        write_to_file(GCLogFileProcessed_path, "============= GCPauseDuration Time Range =============\n");
+        full_gc_stats.getGCPauseDuration_TimeRange_summary().forEach((gc_pause_time, count) -> {
+            write_to_file(GCLogFileProcessed_path, String.format("%f: %d\n", gc_pause_time, count));
+        });
+    }
 }
