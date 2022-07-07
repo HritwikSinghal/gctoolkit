@@ -4,29 +4,14 @@ import com.microsoft.gctoolkit.GCToolKit;
 import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.SingleGCLogFile;
 import com.microsoft.gctoolkit.jvm.JavaVirtualMachine;
-import com.microsoft.gctoolkit.sample.aggregation.*;
+import com.microsoft.gctoolkit.sample.aggregation.CMSTimeSummaryAggregation;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 public class Main {
-
-    private FullGCStats full_gc_stats = new FullGCStats();
-    private Path GCLogFileProcessed_path;
-
-    public void write_to_file(Path fileName, String text) {
-        try {
-            Files.writeString(fileName, text, StandardOpenOption.APPEND);
-            System.out.print(text);
-        } catch (IOException e) {
-            System.out.println("Exiting since Cant write to file.");
-            System.exit(0);
-        }
-    }
-
+    
     public static void main(String[] args) throws IOException {
         String userInput = args.length > 0 ? args[0] : "";
         String gcLogFile = System.getProperty("gcLogFile", userInput);
@@ -41,7 +26,6 @@ public class Main {
 
         Main main = new Main();
         main.analyze(gcLogFile);
-        main.display();
     }
 
     public void analyze(String gcLogFile) throws IOException {
@@ -50,10 +34,6 @@ public class Main {
           In this sample, we load a single log file.
           The log files can be either in text, zip, or gzip format.
          */
-        GCLogFileProcessed_path = Paths.get(gcLogFile + ".processed");
-        GCLogFileProcessed_path.toFile().delete();
-        if (!GCLogFileProcessed_path.toFile().createNewFile())
-            throw new IOException("Cannot Create log processed file");
 
         GCLogFile logFile = new SingleGCLogFile(Path.of(gcLogFile));
         GCToolKit gcToolKit = new GCToolKit();
@@ -76,96 +56,6 @@ public class Main {
 
 
         //--------------------------------------------------------------------------------//
-        //-----      Prints Heap Collection Summary using HeapCollection Classes     -----//
-        //--------------------------------------------------------------------------------//
-        System.out.println("-----         Prints Heap Collection Summary using HeapCollection Classes    -----");
-
-        machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class)
-                .map(HeapOccupancyAfterCollectionSummaryAggregation::get).ifPresent(summary -> {
-                    summary.forEach((gcType, dataSet) -> {
-                        System.out.printf(message, gcType, dataSet.size());
-                        // TODO: 22/06/22 move these stats from FullGC to other class
-                        switch (gcType) {
-                            case DefNew:
-                                full_gc_stats.setDefNewCount(dataSet.size());
-                                break;
-                            case InitialMark:
-                                full_gc_stats.setInitialMarkCount((dataSet.size()));
-                                break;
-                            case Remark:
-                                full_gc_stats.setRemarkCount((dataSet.size()));
-                                break;
-                            default:
-                                System.out.println(gcType + " not managed");
-                                break;
-                        }
-                    });
-                });
-
-//        // 'aggregation' is 'HeapOccupancyAfterCollectionSummary' object but wrapped in 'Optional' keyword, so we have some
-//        // default functions like 'map' (map() applies the Function argument to the value, then returns the result wrapped in an Optional).
-//        Optional<HeapOccupancyAfterCollectionSummaryAggregation> aggregation = machine.getAggregation(HeapOccupancyAfterCollectionSummaryAggregation.class);
-//        // The "HeapOccupancyAfterCollectionSummary::get" will return a 'Map<GarbageCollectionTypes, XYDataSet>' wrapped in 'Optional'
-//        // and we are using "map" function of "Optional" to convert one type to another.
-//        Optional<Map<GarbageCollectionTypes, XYDataSet>> data_from_aggregation = aggregation.map(HeapOccupancyAfterCollectionSummaryAggregation::get);
-//        // summary is of type "Map<GarbageCollectionTypes, XYDataSet>"
-//        data_from_aggregation.ifPresent(summary -> {
-//            summary.forEach((gcType, dataSet) -> {
-//                System.out.printf(message, gcType, dataSet.size());
-//                switch (gcType) {
-//                    case DefNew:
-//                        defNewCount = dataSet.size();
-//                        break;
-//                    case InitialMark:
-//                        initialMarkCount = dataSet.size();
-//                        break;
-//                    case Remark:
-//                        remarkCount = dataSet.size();
-//                        break;
-//                    default:
-//                        System.out.println(gcType + " not managed");
-//                        break;
-//                }
-//            });
-//        });
-
-
-        //--------------------------------------------------------------------------------//
-        //-----         Prints Collection Summary using CollectionCycleCounts Classes    -----//
-        //--------------------------------------------------------------------------------//
-        System.out.println("-----         Prints Collection Summary using CollectionCycleCounts Classes    -----");
-
-        // summary is of type CollectionCycleCountsSummary bcoz it's from that aggregation --^^^^
-        machine.getAggregation(CollectionCycleCountsSummaryAggregation.class).ifPresent(s -> {
-            s.printOn(System.out);
-        });
-
-        //--------------------------------------------------------------------------------//
-        //-----         Prints Pause Time Summary using PauseTime classes            -----//
-        //--------------------------------------------------------------------------------//
-        System.out.println("-----         Prints Pause Time Summary using PauseTime classes    -----");
-
-        // machine.getAggregation(PauseTimeSummary.class) is of type PauseTimeSummary in Optional.
-        // Retrieves the Aggregation for PauseTimeSummary. This is a RuntimeAggregation.
-
-        machine.getAggregation(PauseTimeSummaryAggregation.class).ifPresent(pauseTimeSummary -> {
-            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummary.getTotalPauseTime());
-            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummary.getRuntimeDuration());
-            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummary.getPercentPaused());
-            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummary.getThroughput());
-            full_gc_stats.setFullGC_throughput(pauseTimeSummary.getThroughput());
-        });
-
-//        Optional<PauseTimeSummaryAggregation> my_pause_time_aggregation = machine.getAggregation(PauseTimeSummaryAggregation.class);
-//        // pauseTimeSummary is of type PauseTimeSummary.
-//        my_pause_time_aggregation.ifPresent(pauseTimeSummaryAggregation -> {
-//            System.out.printf("Total pause time                  : %.2f sec\n", pauseTimeSummaryAggregation.getTotalPauseTime());
-//            System.out.printf("Total run time for the program    : %.2f sec\n", pauseTimeSummaryAggregation.getRuntimeDuration());
-//            System.out.printf("Percent pause time                : %.3f %%\n", pauseTimeSummaryAggregation.getPercentPaused());
-//            System.out.printf("Percent Throughput                : %.4f %%\n", pauseTimeSummaryAggregation.getThroughput());
-//        });
-
-        //--------------------------------------------------------------------------------//
         //-----         Prints CMS Time Summary using CMSTime classes            -----//
         //--------------------------------------------------------------------------------//
         System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
@@ -176,55 +66,7 @@ public class Main {
             System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxEventTime());
         });
 
-        //--------------------------------------------------------------------------------//
-        //-----         Prints Full GC Time Summary             -----//
-        //--------------------------------------------------------------------------------//
-        System.out.println("-----         Prints Full GC Summary    -----");
-
-        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-
-            System.out.println();
-            System.out.println("Total Pause Time for GC cause");
-            fullGCAggregationSummary.get_GCCause_total_pause_time_summary().forEach((gcCause, aDouble) -> {
-                System.out.printf("%s = %f sec\n", gcCause, aDouble);
-            });
-
-            System.out.println();
-            System.out.println("MAX Duration for GC cause");
-            fullGCAggregationSummary.get_GCCause_max_PauseTime_duration_summary().forEach((gc_cause, duration) -> {
-                System.out.printf("%s: %f sec\n", gc_cause, duration);
-            });
-
-            System.out.println();
-            System.out.println("GC Cause Total Count");
-            fullGCAggregationSummary.get_GCCause_total_count_summary().forEach((gcCause, integer) -> {
-                System.out.printf("%s count = %d\n", gcCause, integer);
-            });
-
-            System.out.println();
-            System.out.println("GC Type Total Count");
-            fullGCAggregationSummary.get_GCType_total_count_summary().forEach((gc_type, count) -> {
-                System.out.printf("Total count of %s = %d\n", gc_type, count);
-            });
-
-        });
-
-        // -------------------------------------------------------------------------------------------------- //
-        // Write to file from below this line.
-        // -------------------------------------------------------------------------------------------------- //
-
-        machine.getAggregation(FullGCAggregationSummary.class).ifPresent(fullGCAggregationSummary -> {
-            full_gc_stats.setFullGC_avg_pause_time(fullGCAggregationSummary.getAverage_GC_pause_time());
-            full_gc_stats.setFullGC_max_pause_time(fullGCAggregationSummary.get_MaxGCPauseTime());
-        });
     }
 
-    public void display() {
-        write_to_file(GCLogFileProcessed_path, "\n");
-        write_to_file(GCLogFileProcessed_path, "============= Key Performance Indicators =============\n");
-        write_to_file(GCLogFileProcessed_path, String.format("Throughput: %f %%\n", full_gc_stats.getFullGC_throughput()));
-        write_to_file(GCLogFileProcessed_path, String.format("Avg Pause GC Time: %f sec\n", full_gc_stats.getFullGC_avg_pause_time()));
-        write_to_file(GCLogFileProcessed_path, String.format("Max Pause GC Time : %f sec\n", full_gc_stats.getFullGC_max_pause_time()));
-    }
 
 }

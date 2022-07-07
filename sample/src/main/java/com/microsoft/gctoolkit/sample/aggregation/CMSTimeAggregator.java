@@ -12,7 +12,7 @@ public class CMSTimeAggregator extends Aggregator<CMSTimeAggregation> {
 
     public CMSTimeAggregator(CMSTimeAggregation aggregation) {
         super(aggregation);
-//        register(InitialMark.class, this::process);
+        register(InitialMark.class, this::process);
         register(CMSRemark.class, this::process);
     }
 

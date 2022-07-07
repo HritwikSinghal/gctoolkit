@@ -20,9 +20,5 @@ module com.microsoft.gctoolkit.sample {
     exports com.microsoft.gctoolkit.sample.collections;
 
     provides com.microsoft.gctoolkit.aggregator.Aggregation with
-            HeapOccupancyAfterCollectionSummaryAggregation,
-            PauseTimeSummaryAggregation,
-            CollectionCycleCountsSummaryAggregation,
-            CMSTimeSummaryAggregation,
-            FullGCAggregationSummary;
+            CMSTimeSummaryAggregation;
 }
