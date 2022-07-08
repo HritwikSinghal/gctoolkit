@@ -34,11 +34,11 @@ public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
     @Override
     public void recordEventDuration(double duration) {
         total_duration += duration;
-        if (duration > maxEventTime) {
+
+        if (duration > maxEventTime)
             maxEventTime = duration;
-        }
-        if (duration < minEventTime) {
+        if (duration < minEventTime)
             minEventTime = duration;
-        }
+
     }
 }
