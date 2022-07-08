@@ -5,9 +5,9 @@ import com.microsoft.gctoolkit.aggregator.Collates;
 @Collates(CMSTimeAggregator.class)
 public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
 
-    private double total_duration;
-    private double maxEventTime;
-    private double minEventTime;
+    public double total_duration;
+    public double maxEventTime;
+    public double minEventTime;
 
     @Override
     public boolean hasWarning() {
@@ -17,18 +17,6 @@ public class CMSTimeSummaryAggregation implements CMSTimeAggregation {
     @Override
     public boolean isEmpty() {
         return false;
-    }
-
-    public double getTotalEventTime() {
-        return total_duration;
-    }
-
-    public double getMinEventTime() {
-        return minEventTime;
-    }
-
-    public double getMaxEventTime() {
-        return maxEventTime;
     }
 
     @Override

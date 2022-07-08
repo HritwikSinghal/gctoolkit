@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    
+
     public static void main(String[] args) throws IOException {
         String userInput = args.length > 0 ? args[0] : "";
         String gcLogFile = System.getProperty("gcLogFile", userInput);
@@ -50,20 +50,10 @@ public class Main {
          */
         JavaVirtualMachine machine = gcToolKit.analyze(logFile);
 
-
-        // Retrieves the Aggregation for HeapOccupancyAfterCollectionSummary. This is a time-series aggregation.
-        String message = "The XYDataSet for %s contains %s items.\n";
-
-
-        //--------------------------------------------------------------------------------//
-        //-----         Prints CMS Time Summary using CMSTime classes            -----//
-        //--------------------------------------------------------------------------------//
-        System.out.println("-----         Prints CMS Time Summary using CMSTime classes    -----");
-
         machine.getAggregation(CMSTimeSummaryAggregation.class).ifPresent(cmsTimeSummaryAggregation -> {
-            System.out.printf("Total Initial Mark Time                  : %s sec\n", cmsTimeSummaryAggregation.getTotalEventTime());
-            System.out.printf("Minimum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMinEventTime());
-            System.out.printf("Maximum initial mark duration:           :%s sec\n", cmsTimeSummaryAggregation.getMaxEventTime());
+            System.out.printf("Total Time                  : %s sec\n", cmsTimeSummaryAggregation.total_duration);
+            System.out.printf("Minimum duration:           :%s sec\n", cmsTimeSummaryAggregation.minEventTime);
+            System.out.printf("Maximum duration:           :%s sec\n", cmsTimeSummaryAggregation.maxEventTime);
         });
 
     }
